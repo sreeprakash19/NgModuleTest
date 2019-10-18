@@ -1,3 +1,4 @@
+<!--
 <form>
 
 
@@ -16,3 +17,14 @@
 </mat-form-field>
 {{pokemonControl.value}}
 </form>
+-->
+
+<div fxLayout = "column">
+  <h1>Parent Component</h1>
+
+  <a [routerLink]="['/feature-start']">Lazy feature-start Module</a> 
+
+  <a [routerLink]="['/home(something:feature-final)']"> Lazy feature-final Module</a>
+
+  <a [routerLink]="['']">Eager Customer Module</a>
+</div>

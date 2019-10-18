@@ -6,7 +6,9 @@ import { CustomerDashboardComponent } from './customer-dashboard/customer-dashbo
 
 
 const routes = [
-    { path: 'home', component: CustomerDashboardComponent }
+    { path: 'home', component: CustomerDashboardComponent },
+   // { path: 'feature-start', loadChildren: () => import('../feature-start/feature-start.module').then(m => m.FeatureStartModule) }
+
 ];
 
 @NgModule({
