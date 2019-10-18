@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 export interface Pokemon {
   value: string;
@@ -14,12 +14,11 @@ export interface PokemonGroup {
 
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'app-feature-start',
+  templateUrl: './feature-start.component.html',
+  styleUrls: ['./feature-start.component.css']
 })
-export class AppComponent {
-  title = 'test';
+export class FeatureStartComponent implements OnInit {
   pokemonControl = new FormControl();
   pokemonGroups: PokemonGroup[] = [
     {
@@ -31,4 +30,9 @@ export class AppComponent {
       ]
     }
   ];
+  constructor() { }
+
+  ngOnInit() {
+  }
+
 }
