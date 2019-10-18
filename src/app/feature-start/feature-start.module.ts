@@ -17,10 +17,3 @@ import {AppMaterialModule} from '../app-material/app-material.module';
   ]
 })
 export class FeatureStartModule { }
-
-/*
-CommonModule,
-SharedModule,
-ReactiveFormsModule,
-CustomerRoutingModule,
-AppMaterialModule*/

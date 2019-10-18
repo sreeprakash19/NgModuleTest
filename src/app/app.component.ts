@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 
 export interface Pokemon {
@@ -23,12 +24,20 @@ export class AppComponent {
   pokemonControl = new FormControl();
   pokemonGroups: PokemonGroup[] = [
     {
-      name: 'Grass',
+      name: 'Select Module',
       pokemon: [
-        {value: 'bulbasaur-0', viewValue: 'Bulbasaur'},
-        {value: 'oddish-1', viewValue: 'Oddish'},
-        {value: 'bellsprout-2', viewValue: 'Bellsprout'}
+        {value: 'feature-start', viewValue: 'FeatureStart'},
+        {value: 'feature-final', viewValue: 'FeatureFinal'}
       ]
     }
   ];
+  constructor(private router: Router){
+
+  }
+  ClickSelect(location: string){
+    if(location != null){
+      this.router.navigateByUrl(location);
+    }
+   
+  }
 }
