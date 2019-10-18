@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { UserService } from '../user.service';
 
 export interface Pokemon {
   value: string;
@@ -30,7 +31,16 @@ export class FeatureStartComponent implements OnInit {
       ]
     }
   ];
-  constructor() { }
+  hellocount = 0;
+  constructor(private svc: UserService) {
+    this.svc.footerdisplay = '';
+    this.svc.myData.subscribe(
+      (val) => this.hellocount = val
+    );
+   }
+  increase() {
+    this.svc.increaseCounter();
+  }
 
   ngOnInit() {
   }

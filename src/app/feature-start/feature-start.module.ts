@@ -6,6 +6,7 @@ import { FeatureStartComponent } from './feature-start.component';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import {AppMaterialModule} from '../app-material/app-material.module';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [FeatureStartComponent],
@@ -13,7 +14,8 @@ import {AppMaterialModule} from '../app-material/app-material.module';
     SharedModule,
     ReactiveFormsModule,
     FeatureStartRoutingModule,
-    AppMaterialModule
+    AppMaterialModule,
+    FlexLayoutModule
   ]
 })
 export class FeatureStartModule { }

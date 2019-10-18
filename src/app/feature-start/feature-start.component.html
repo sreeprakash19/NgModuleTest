@@ -1,1 +1,21 @@
-<p>feature-start works!</p>
+<pre>
+The Modules that are imported in this module are
+    SharedModule,
+    ReactiveFormsModule,
+    FeatureStartRoutingModule,
+    AppMaterialModule,
+    FlexLayoutModule
+The command used for creating this Lazy Loaded Modules:
+    ng generate module FeatureStart --route feature-start --module app.module
+    ng generate module FeatureFinal --route feature-final --module app.module
+To print in lato font
+    pre {{ '{' }} font-family: Lato; {{ '}' }}
+</pre>
+
+<label>
+    Test the Singleton Service:
+</label>
+
+<button (click)="increase()"> Change value from feature-start </button>
+<br>
+hellocount: {{hellocount}}

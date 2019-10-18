@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-/*
-import {MatSelectModule} from '@angular/material/select';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';*/
+
 import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
@@ -22,10 +19,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
   declarations: [],
   imports: [
     CommonModule,
-    /*
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule*/
+
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
@@ -40,10 +34,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatGridListModule
   ],
   exports: [
-    /*
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule*/
+
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,

@@ -1,11 +1,24 @@
 <pre>
-  The following objectives were met:
-  1. Feature Module: Primary and lazy
-  2. Services: providedIn : root and Module
-  3. Material has a seperate Module
-  4. Shared Module for Feature Modules
-  5. Installed Flex, Forms and Material
-  6. Also Firebase Backend and hosting
-  7. Git location is : https://github.com/gmanojisaac/angularUpstox.git
-  8. Branches - * AddSingletonProvider / master / upstoxsanity
+The purpose of this Project is to give capability for the developer to develop individual modules and test them.
+It has two modules feature start and feature final both are lazy loaded based on selection.
+It also has a singleton service for communication.
+
+Commands for Generating Main Module:CustomerDashboard  showing the initial screen
+    ng generate module CustomerDashboard
+    ng generate component customer-dashboard/CustomerDashboard
+
+The following objectives were met:
+  1. Feature Module to test: lazy loaded using the user selection dynamically
+      ng generate module FeatureStart --route feature-start --module app.module
+      ng generate module FeatureFinal --route feature-final --module app.module
+  2. Services: providedIn : root.
+      ng generate service User
+      App Parent Module & Lazyloaded Test modules can use the service without adding in providers.
+  3. Material has a seperate Module - AppMaterial Module
+      Import the AppMaterial Module if the tested NgModule has Angular Material.
+      ng g module app-material
+      ng add @angular/material
+  4. Shared Module for Test Feature Modules exporting formsModule
+      Command for generating shared modules
+      ng generate module shared
 </pre>
