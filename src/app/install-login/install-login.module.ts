@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
-import { FeatureStartRoutingModule } from './feature-start-routing.module';
-import { FeatureStartComponent } from './feature-start.component';
+import { InstallLoginRoutingModule } from './install-login-routing.module';
+import { InstallLoginComponent } from './install-login.component';
 
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,10 +10,10 @@ import {AppMaterialModule} from '../app-material/app-material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
-  declarations: [FeatureStartComponent],
+  declarations: [InstallLoginComponent],
   imports: [
-
-    FeatureStartRoutingModule,
+    CommonModule,
+    InstallLoginRoutingModule,
 
     SharedModule,
     ReactiveFormsModule,
@@ -20,4 +21,4 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FlexLayoutModule
   ]
 })
-export class FeatureStartModule { }
+export class InstallLoginModule { }

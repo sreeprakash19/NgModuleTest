@@ -5,7 +5,11 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full'},
   { path: 'feature-start', loadChildren: () => import('./feature-start/feature-start.module').then(m => m.FeatureStartModule) },
-  { path: 'feature-final', loadChildren: () => import('./feature-final/feature-final.module').then(m => m.FeatureFinalModule) }
+  { path: 'feature-final', loadChildren: () => import('./feature-final/feature-final.module').then(m => m.FeatureFinalModule) },
+  { path: 'install-login', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
+  { path: 'login-fail', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
+  { path: 'login-retry', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
+  { path: 'login-photourl', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) }
 
 ];
 //Learning - if the Primary module lazy loads then it is same as app module

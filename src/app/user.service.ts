@@ -7,8 +7,9 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class UserService {
   public counter = 0;
-  hello = 0;
-  footerdisplay='';
+  hellotext = '';
+  hello = 0 ;
+  footerdisplay = '';
   public myData: BehaviorSubject<number> = new BehaviorSubject<number>(this.hello);
 
   increaseCounter() {

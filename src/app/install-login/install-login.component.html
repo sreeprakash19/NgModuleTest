@@ -1,0 +1,26 @@
+<div *ngIf= "svc.hellotext === 'install-login'" fxLayout="column"  fxLayoutAlign ="center center" fxLayoutGap="10%">
+    <div>
+        Show Authentication tests
+    </div>
+
+    <button  mat-raised-button *ngIf= "!showretry" color="primary" (click)= "GoogleLogin()">
+            Google login
+    </button>
+
+    <mat-card fxFlex="50%"  [style.backgroundColor]="'cyan'" *ngIf= "showretry">
+        <mat-card-header>
+            <mat-card-title>Logging into Google Account</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content fxLayout="column">
+            <mat-spinner *ngIf= "showspinner"></mat-spinner>
+
+            <button mat-raised-button *ngIf= "!showspinner" color="primary" (click)= "GoogleLogin()"  > {{retryoption}}</button>
+        </mat-card-content>          
+    </mat-card>
+
+
+
+</div>
+
+

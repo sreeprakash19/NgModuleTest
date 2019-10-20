@@ -10,6 +10,12 @@ import { CustomerDashboardModule } from './customer-dashboard/customer-dashboard
 import {AppMaterialModule} from './app-material/app-material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
+import { environment } from '../environments/environment';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -23,7 +29,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FlexLayoutModule,
     AppMaterialModule,
     ReactiveFormsModule,
-    CustomerDashboardModule
+    CustomerDashboardModule,
+
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
+    AngularFireStorageModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
