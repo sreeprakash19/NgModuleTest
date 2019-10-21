@@ -1,0 +1,142 @@
+<div *ngIf= "svc.hellotext === 'install-login'" fxLayout="column"  fxLayoutAlign ="center center" fxLayoutGap="10%">
+    <div>
+        Show Authentication tests
+    </div>
+
+    <button  mat-raised-button *ngIf= "!showretry" color="primary" (click)= "GoogleLogin()">
+            Google login
+    </button>
+
+    <mat-card fxFlex="50%"  [style.backgroundColor]="'cyan'" *ngIf= "showretry">
+        <mat-card-header>
+            <mat-card-title>Logging into Google Account</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content fxLayout="column">
+            <mat-spinner *ngIf= "showspinner"></mat-spinner>
+
+            <button mat-raised-button *ngIf= "!showspinner" color="primary" (click)= "GoogleLogin()"  > {{retryoption}}</button>
+        </mat-card-content>          
+    </mat-card>
+</div>
+
+
+<div *ngIf= "svc.hellotext === 'login-fail'" fxLayout="column"  fxLayoutAlign ="center center" fxLayoutGap="10%">
+        <div>
+            Show Authentication tests
+        </div>
+    
+        <button  mat-raised-button *ngIf= "!showretry" color="primary" (click)= "GoogleLoginFail()">
+                Google login
+        </button>
+    
+        <mat-card fxFlex="50%"  [style.backgroundColor]="'cyan'" *ngIf= "showretry">
+            <mat-card-header>
+                <mat-card-title>Logging into Google Account</mat-card-title>
+            </mat-card-header>
+            
+            <mat-card-content fxLayout="column">
+                <mat-spinner *ngIf= "showspinner"></mat-spinner>
+    
+                <button mat-raised-button *ngIf= "!showspinner" color="primary" (click)= "GoogleLoginFail()"  > {{retryoption}}</button>
+            </mat-card-content>          
+        </mat-card>
+    
+</div>
+    
+<div *ngIf= "svc.hellotext === 'login-retry'" fxLayout="column"  fxLayoutAlign ="center center" fxLayoutGap="10%">
+        <div>
+            Show Authentication tests
+        </div>
+    
+        <button  mat-raised-button *ngIf= "!showretry" color="primary" (click)= "GoogleLoginFail()">
+                Google login
+        </button>
+    
+        <mat-card fxFlex="50%"  [style.backgroundColor]="'cyan'" *ngIf= "showretry">
+            <mat-card-header>
+                <mat-card-title>Logging into Google Account</mat-card-title>
+            </mat-card-header>
+            
+            <mat-card-content fxLayout="column">
+                <mat-spinner *ngIf= "showspinner"></mat-spinner>
+    
+                <button mat-raised-button *ngIf= "!showspinner" color="primary" (click)= "GoogleLoginRetry()"  > {{retryoption}}</button>
+            </mat-card-content>          
+        </mat-card>
+    
+</div>
+
+<div *ngIf= "svc.hellotext === 'login-photourl'" fxLayout="column"  fxLayoutAlign ="center center" fxLayoutGap="10%">
+    <div *ngIf="afAuth.user | async as user; else showLoginphotourl">
+            <h1>Hello User !</h1>
+                <pre>
+                        UID: {{ user?.uid }}
+                        PhotoURL: {{ user?.photoURL }}
+                </pre>
+    </div>
+    <ng-template #showLoginphotourl>
+
+        <div *ngIf= "!showretryphotourl">
+            <h2>
+                Show Authentication tests
+            </h2>
+        
+            <button  mat-raised-button color="primary" (click)= "GoogleLoginPhotoUrl()">
+                    {{retryoptionphotourl}}
+            </button>
+        </div>
+
+        <div *ngIf= "showretryphotourl">
+                <mat-card fxFlex="50%"  [style.backgroundColor]="'cyan'" *ngIf= "showretryphotourl">
+                        <mat-card-header>
+                            <mat-card-title>Logging into Google Account</mat-card-title>
+                        </mat-card-header>
+                        
+                        <mat-card-content fxLayout="column">
+                            <mat-spinner *ngIf= "showspinnerphotourl"></mat-spinner>
+                               
+                        </mat-card-content>          
+                </mat-card>
+        </div>
+    </ng-template>
+
+</div>
+
+<div *ngIf= "svc.hellotext === 'login-photourldialog'" fxLayout="column"  fxLayoutAlign ="center center" fxLayoutGap="10%">
+        <div *ngIf="afAuth.user | async as user; else showLoginphotourl">
+                <h1>Hello User !</h1>
+                    <pre>
+                            UID: {{ user?.uid }}
+                            PhotoURL: {{ user?.photoURL }}
+                    </pre>
+        </div>
+        <ng-template #showLoginphotourl>
+    
+            <div *ngIf= "!showretryphotourl">
+                <h2>
+                    Show Authentication tests
+                </h2>
+            
+                <button  mat-raised-button color="primary" (click)= "GoogleLoginPhotoUrl()">
+                        {{retryoptionphotourl}}
+                </button>
+            </div>
+    
+            <div *ngIf= "showretryphotourl">
+                    <mat-card fxFlex="50%"  [style.backgroundColor]="'cyan'" *ngIf= "showretryphotourl">
+                            <mat-card-header>
+                                <mat-card-title>Logging into Google Account</mat-card-title>
+                            </mat-card-header>
+                            
+                            <mat-card-content fxLayout="column">
+                                <mat-spinner *ngIf= "showspinnerphotourl"></mat-spinner>
+                                   
+                            </mat-card-content>          
+                    </mat-card>
+            </div>
+        </ng-template>
+    
+    </div>
+
+   

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { UserService } from '../user.service';
 
 export interface Pokemon {
   value: string;
@@ -30,7 +31,9 @@ export class FeatureFinalComponent implements OnInit {
       ]
     }
   ];
-  constructor() { }
+  constructor(private svc: UserService) {
+    this.svc.footerdisplay = '';
+   }
 
   ngOnInit() {
   }

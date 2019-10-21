@@ -1,2 +1,61 @@
+<div gdAreas="header header | side content | footer footer" gdGap="10px" gdRows="auto auto auto">
 
-<router-outlet ></router-outlet>
+    <div gdArea="header">
+      <mat-toolbar color="primary">
+        <span>Select the Feature for sanity Testing</span>
+  
+        <span fxFlex="auto"> </span>
+  
+      </mat-toolbar>
+    </div>
+  
+    <div gdArea="side">
+      <form fxLayout="column" fxLayoutAlign="center center">
+        <h4>Lazyload NgModule</h4>
+        <mat-form-field>
+          <mat-label>NgModule 2 Test</mat-label>
+          <mat-select [formControl]="pokemonControl">
+            <mat-option (click)="clickedNone()">-- None --</mat-option>
+            <mat-optgroup *ngFor="let group of pokemonGroups" [label]="group.name" [disabled]="group.disabled">
+              <mat-option *ngFor="let pokemon of group.pokemon" [value]="pokemon.value"
+                (click)="ClickSelect(pokemon.value)">
+                {{pokemon.viewValue}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+  
+      </form>
+  
+      <form fxLayout="column" fxLayoutAlign="center center">
+        <h4>Testing Selected Module</h4>
+        <mat-form-field>
+          <mat-label>Module Test</mat-label>
+          <mat-select [formControl]="pokemonControltc">
+            <mat-option (click)="clickedNonetc()">-- None --</mat-option>
+            <mat-optgroup *ngFor="let grouptc of pokemonGroupstc" [label]="grouptc.name" [disabled]="grouptc.disabled">
+              <mat-option *ngFor="let pokemontc of grouptc.pokemon" [value]="pokemontc.value"
+                (click)="ClickSelecttc(pokemontc.value)">
+                {{pokemontc.viewValue}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+  
+      </form>
+    </div>
+  
+    <div gdArea="content" [ngStyle]="{'border': '1px solid black', 'border-radius': '8px'}">
+      <div>
+  
+        <router-outlet></router-outlet>
+  
+      </div>
+    </div>
+  
+    <div gdArea="footer">
+      <textarea id='textarea' rows="10vh" cols="100vw">
+        {{svc.footerdisplay}}
+      </textarea>
+    </div>
+  </div>

@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { FeatureStartComponent } from './feature-start.component';
+import { InstallLoginComponent } from './install-login.component';
 
-const routes: Routes = [{ path: '', component: FeatureStartComponent },
-];
+const routes: Routes = [{ path: '', component: InstallLoginComponent }];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class FeatureStartRoutingModule { }
+export class InstallLoginRoutingModule { }
