@@ -22,7 +22,7 @@ export interface PokemonGroup {
 })
 export class AppComponent {
   title = 'test';
-  pokemonControl = new FormControl('install-login');
+  pokemonControl = new FormControl('envstart-menu');
   pokemonGroups: PokemonGroup[] = [
     {
       name: 'Work on Module',
@@ -32,7 +32,13 @@ export class AppComponent {
       ]
     },
     {
-      name: 'Angular Installation',
+      name: 'Angular Environment',
+      pokemon: [
+        {value: 'envstart-menu', viewValue: 'Setup Env'}
+      ]
+    },
+    {
+      name: 'Angular Dev start',
       pokemon: [
         {value: 'install-login', viewValue: 'Login Screen'}
       ]
@@ -60,7 +66,7 @@ export class AppComponent {
   pokemonControltc = new FormControl({value: '', disabled: true});
   pokemonGroupstc: PokemonGroup[] = [
     {
-      name: 'Angular Installation',
+      name: 'Angular Dev start',
       pokemon: [
         {value: 'install-login', viewValue: 'LoginPass'},
         {value: 'login-olduser', viewValue: 'LoginOldUser'},
@@ -68,9 +74,13 @@ export class AppComponent {
         {value: 'login-retry', viewValue: 'LoginRetryPass'},
         {value: 'login-photourl', viewValue: 'LoginPhotoURLSaved'},
         {value: 'login-photourldialog', viewValue: 'PhotoURLDialog'}
-        
-        
       ]
+    },
+    {
+      name: 'Angular Environment',
+      pokemon: [
+        {value: 'envstart-menu', viewValue: 'MenuBarOptions'},
+        {value: 'envstart-calc', viewValue: 'MenuBarCalc'}         ]
     }
 
   ];

@@ -12,8 +12,9 @@ const routes: Routes = [
   { path: 'login-retry', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-photourl', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-photourldialog', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
-  { path: 'envstart-menu', loadChildren: () => import('./env-setup/env-setup.module').then(m => m.EnvSetupModule) }
-  
+  { path: 'envstart-menu', loadChildren: () => import('./env-setup/env-setup.module').then(m => m.EnvSetupModule) },
+  { path: 'envstart-calc', loadChildren: () => import('./env-setup/env-setup.module').then(m => m.EnvSetupModule) }
+
 
 ];
 //Learning - if the Primary module lazy loads then it is same as app module
