@@ -9,8 +9,8 @@
       </mat-toolbar>
     </div>
   
-    <div gdArea="side">
-      <form fxLayout="column" fxLayoutAlign="center center">
+    <div gdArea="side" fxLayout="column" fxLayoutAlign="center center">
+      <form >
         <h4>Lazyload NgModule</h4>
         <mat-form-field>
           <mat-label>NgModule 2 Test</mat-label>
@@ -27,7 +27,7 @@
   
       </form>
   
-      <form fxLayout="column" fxLayoutAlign="center center">
+      <form >
         <h4>Testing Selected Module</h4>
         <mat-form-field>
           <mat-label>Module Test</mat-label>
@@ -43,6 +43,10 @@
         </mat-form-field>
   
       </form>
+      <textarea id='textarea' rows="10%" cols="35%">
+        {{svc.sidebardisplay}}
+      </textarea>
+
     </div>
   
     <div gdArea="content" [ngStyle]="{'border': '1px solid black', 'border-radius': '8px'}">
@@ -56,6 +60,12 @@
     <div gdArea="footer">
       <textarea id='textarea' rows="10vh" cols="100vw">
         {{svc.footerdisplay}}
+      </textarea>
+      <textarea id='textarea' rows="10vh" cols="100vw">
+        {{svc.resultdisplay}}
+      </textarea>
+      <textarea id='textarea' rows="10vh" cols="100vw">
+        {{svc.moredisplay}}
       </textarea>
     </div>
   </div>

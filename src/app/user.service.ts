@@ -10,6 +10,9 @@ export class UserService {
   hellotext = '';
   hello = 0 ;
   footerdisplay = '';
+  sidebardisplay = '';
+  resultdisplay = '';
+  moredisplay= '';
   public myData: BehaviorSubject<number> = new BehaviorSubject<number>(this.hello);
 
   increaseCounter() {

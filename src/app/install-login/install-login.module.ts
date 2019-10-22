@@ -19,6 +19,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     ReactiveFormsModule,
     AppMaterialModule,
     FlexLayoutModule
-  ]
-})
+  ],
+  entryComponents: [
+    InstallLoginComponent
+  ]})
 export class InstallLoginModule { }

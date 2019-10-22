@@ -63,6 +63,7 @@ export class AppComponent {
       name: 'Angular Installation',
       pokemon: [
         {value: 'install-login', viewValue: 'LoginPass'},
+        {value: 'login-olduser', viewValue: 'LoginOldUser'},
         {value: 'login-fail', viewValue: 'LoginFail'},
         {value: 'login-retry', viewValue: 'LoginRetryPass'},
         {value: 'login-photourl', viewValue: 'LoginPhotoURLSaved'},

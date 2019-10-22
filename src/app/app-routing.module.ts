@@ -8,9 +8,11 @@ const routes: Routes = [
   { path: 'feature-final', loadChildren: () => import('./feature-final/feature-final.module').then(m => m.FeatureFinalModule) },
   { path: 'install-login', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-fail', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
+  { path: 'login-olduser', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-retry', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-photourl', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
-  { path: 'login-photourldialog', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) }
+  { path: 'login-photourldialog', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
+  { path: 'envstart-menu', loadChildren: () => import('./env-setup/env-setup.module').then(m => m.EnvSetupModule) }
   
 
 ];
