@@ -1,4 +1,5 @@
-<pre>
+<!--
+    <pre>
 The Modules that are imported in this module are
     SharedModule,
     ReactiveFormsModule,
@@ -19,3 +20,74 @@ To print in lato font
 <button (click)="increase()"> Change value from feature-start </button>
 <br>
 hellocount: {{hellocount}}
+-->
+<!--
+    //TC Start
+    teamForm is a formGroup and it has a FormArray
+    modelData shows the current data of the form
+    savedData shows the pristine data of the form from Db
+    Also load the data from the firebase at startup
+    And write the modelData to the firebase on saveForm
+
+    Data in firebase:
+       "employees":[
+      {
+        "empId":"101",
+        "empName":"Harish",
+        "skill":"Java"
+      },
+      {
+        "empId":"111",
+        "empName":"Mohit",
+        "skill":"Angular"
+      }
+     ]
+
+    ngOninit// load the data from the firebase
+    on edit of data update the currentData and run sync/ async validators
+    on reset load the pristine data from Db
+    on Save data move the dirty data to Db and again load the pristine data from Db
+    Also delete the data with respect to index and update the Model data
+    Also add a formarray Model data 
+    Also save the Model data to the DB
+-->
+
+    From DB:
+    <ul>
+        <li *ngFor="let item of items | async">
+            {{ item.empName }}
+        </li>
+    </ul>
+    <pre>
+    Show Current Model Data:
+            {{empdetailscurrent() | json}}
+    </pre>
+
+    <pre>
+    Show Form Data:
+    {{teamFormshowvalue() | json}}
+    </pre>
+
+    <h3>Load pristine Data </h3>
+    <button type="button" (click)="loadTeamfromFB()" > Load - patch Value </button>
+
+    <h3>setControl array </h3>
+    <button type="button" (click)="loadsetcontrol()" > Load- SetControl </button>
+
+    <h3>Save Dirty Data </h3>
+    <button type="button" (click)="SaveTeam()" > Save to DB </button>
+
+    <form [formGroup]="teamForm" (ngSubmit)="onFormSubmit()">
+        <div formArrayName="employees"> 
+            <div *ngFor = "let emp of empFormArray.controls; let idx = index" [formGroupName]="idx" class="employee">
+                <p> <b>Employee : {{idx + 1}}</b> </p>
+                <p>Emp Id : <input formControlName="empId"></p>
+                <p>Emp Name : <input formControlName="empName"></p>
+                <p>skill : <input formControlName="skill"></p>
+                	
+                <p><button type="button" (click)="deleteEmployee(idx)">Delete Array i</button></p>
+            </div>
+            <button type="button" (click)="addEmployee()">Add More Employee</button>
+        </div>
+        <button type="submit" >Save</button>
+    </form>

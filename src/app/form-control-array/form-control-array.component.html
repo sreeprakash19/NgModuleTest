@@ -1,0 +1,118 @@
+
+<div *ngIf="svc.hellotext === 'fcarray-start'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            FormControl Value in Console
+            1. const controlValue = new FormControl('some value'); 
+        
+            2. const controlStatus = new FormControl({{ '{' }} value: null, disabled: true {{ '}' }});
+    </pre>
+    
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-FormField'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            Show the mat-input/label/FormField basics
+    </pre>
+    <form [formGroup]="optionsFormField">
+        <mat-card style = "background-color:cornflowerblue;">
+            <mat-card-header >
+                <mat-form-field  
+                [appearance]="optionsFormField.appearance"
+                [color]= "optionsFormField.color"
+                [floatLabel] = "optionsFormField.value.floatLabel"
+                [hideRequiredMarker]="optionsFormField.value.hideRequiredMarker"
+                [hintLabel] = "optionsFormField.value.hintLabel">
+        
+                    
+                    <mat-icon matPrefix>error</mat-icon>
+                    <input matInput placeholder="Simple placeholder" formControlName = "matinputvalue" style = "background-color:cornflowerblue;" >
+                    <mat-icon matSuffix>error_outline</mat-icon>
+                </mat-form-field>
+            </mat-card-header>
+               
+        </mat-card>
+        
+    </form>
+    
+    Value of optionsFormField: <pre> {{ optionsFormField.value | json }} </pre>
+
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-inputhint'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            Show the Mat-Hint basics
+    </pre>
+    <p  [formGroup]="optionsHint">
+        <mat-card style = "background-color:cornflowerblue;">
+                <strong>Directive needs to added for required</strong><br> 
+            <mat-form-field>
+                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue" >
+                <span matPrefix>$&nbsp;</span>
+                <span matSuffix>.00</span>
+                <mat-hint align="end">{{optionsHint.value.matinputvalue?.length || 0}}/10</mat-hint>
+                <mat-hint [align]="optionsHint.value.alignhint">Please Enter 3 characters</mat-hint>
+            </mat-form-field>
+        </mat-card>
+    </p>
+    Value of optionsHint: <pre> {{ optionsHint.value | json }} </pre>
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-materror'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            Show the materror
+    </pre>
+    <form  [formGroup]="optionsError">
+        <mat-card style = "background-color:cornflowerblue;">
+                <strong>Directive needs to added for required</strong><br> 
+            <mat-form-field>
+                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue">
+                <mat-hint [align]="optionsError.value.alignhint" *ngIf="controlError.invalid">{{getErrorMessage()}}</mat-hint>
+                <mat-hint align="end">{{optionsError.value.matinputvalue?.length || 0}}/10</mat-hint>
+               
+            </mat-form-field>
+        </mat-card>
+    </form>
+    Value of optionsError: <pre> {{ optionsError.value | json }} </pre>
+
+
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-errstatematch'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            Error State Matcher
+    </pre>
+    <form  [formGroup]="optionsErrorMatch">
+        <mat-card style = "background-color:cornflowerblue;"  fxLayout="column">
+
+            <mat-form-field>                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue" >
+                <mat-hint [align]="optionsErrorMatch.value.alignhint" *ngIf="controlErrorMatch.invalid">{{getErrorMatchMessage()}}</mat-hint>
+                <mat-hint align="end">{{optionsErrorMatch.value.matinputvalue?.length || 0}}/10</mat-hint>
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalueconfirm" [errorStateMatcher]="errorMatcher">
+                <mat-hint align="end">{{optionsErrorMatch.value.matinputvalueconfirm?.length || 0}}/10</mat-hint>
+                
+                <mat-error *ngIf="optionsErrorMatch.hasError('passwordsDoNotMatch')">
+                  Passwords do not match!
+                </mat-error>
+
+                
+            </mat-form-field>
+        </mat-card>
+    </form>
+    Value of optionsErrorMatch: <pre> {{ optionsErrorMatch.value | json }} </pre>
+    Status of Value of optionsErrorMatch: {{optionsErrorMatch.status}}
+
+   
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-syncValidator'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            Show the syncValidator
+    </pre>
+
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-AsyncValidator'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+            Show the AsyncValidator
+    </pre>
+
+</div>

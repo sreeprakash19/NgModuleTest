@@ -1,2 +1,26 @@
-<p>feature-final works!</p>
+<form [formGroup]="University" (ngSubmit)="onFormSubmit()">
+        <p>CollegeName : <input formControlName="CollegeName">
+        <p>PrincipalName : <input formControlName="PrincipalName"></p>
+        
+        <b>Department :</b><br>
+        <div formGroupName="teamDept" > 
+                <p>Department Head : <input formControlName="deptHead"></p>
+                <p>Department Name : <input formControlName="deptName"></p>
+        </div>
+        <div>
+                <b> Employees in Dept :</b><br><br>
+                <div formArrayName="employees"> 
+                <div *ngFor = "let emp of empFormArray.controls; let idx = index" [formGroupName]="idx">
+                        <p> <b>Employee : {{idx + 1}}</b> </p>
+                <p>Emp Id : <input formControlName="empId"></p>
+                        <p>Emp Name : <input formControlName="empName"></p>
+                        <p>Skill :  <input formControlName="skill"></p>
 
+                        <p><button type="button" (click)="deleteEmployee(idx)">Delete</button></p>
+                </div>
+                </div>
+                <button type="button" (click)="addEmployee()">Add More Employee</button>
+        </div> <br/>
+        <button type="button" (click)="resetTeamForm()">Reset</button>
+        <button [disabled]="University.invalid">SUBMIT</button>
+</form>

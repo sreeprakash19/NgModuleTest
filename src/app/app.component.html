@@ -43,13 +43,13 @@
         </mat-form-field>
   
       </form>
-      <textarea id='textarea' rows="10%" cols="35%">
+      <textarea id='textarea' rows="10%" cols="35%" style="background-color:cornsilk; font-family: Lato" >
         {{svc.sidebardisplay}}
       </textarea>
 
     </div>
   
-    <div gdArea="content" [ngStyle]="{'border': '1px solid black', 'border-radius': '8px'}">
+    <div gdArea="content" [ngStyle]="{'border': '1px solid black', 'border-radius': '8px', 'background-color':'cornsilk', 'font-family': 'Lato'}">
       <div>
   
         <router-outlet></router-outlet>
@@ -58,13 +58,13 @@
     </div>
   
     <div gdArea="footer">
-      <textarea id='textarea' rows="10vh" cols="100vw">
+      <textarea id='textarea' rows="10vh" cols="100vw" style="background-color:cornsilk; font-family: Lato;" >
         {{svc.footerdisplay}}
       </textarea>
-      <textarea id='textarea' rows="10vh" cols="100vw">
+      <textarea id='textarea' rows="10vh" cols="100vw" style="background-color:cornsilk; font-family: Lato;" >
         {{svc.resultdisplay}}
       </textarea>
-      <textarea id='textarea' rows="10vh" cols="100vw">
+      <textarea id='textarea' rows="10vh" cols="100vw" style="background-color:cornsilk; font-family: Lato;" >
         {{svc.moredisplay}}
       </textarea>
     </div>
