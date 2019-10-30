@@ -90,12 +90,9 @@
             <mat-form-field>
                 <input matInput placeholder="Simple Placeholder" formControlName="matinputvalueconfirm" [errorStateMatcher]="errorMatcher">
                 <mat-hint align="end">{{optionsErrorMatch.value.matinputvalueconfirm?.length || 0}}/10</mat-hint>
-                
                 <mat-error *ngIf="optionsErrorMatch.hasError('passwordsDoNotMatch')">
                   Passwords do not match!
-                </mat-error>
-
-                
+                </mat-error>                
             </mat-form-field>
         </mat-card>
     </form>
@@ -108,11 +105,40 @@
     <pre>
             Show the syncValidator
     </pre>
+    <form  [formGroup]="OptionsSyncValidator">
+        <mat-card style = "background-color:cornflowerblue;"  fxLayout="column">
 
+            <mat-form-field>                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue" >
+                <mat-hint [align]="OptionsSyncValidator.value.alignhint" *ngIf="controlSyncValidator.invalid">{{getSyncValidatorMessage()}}</mat-hint>
+                <mat-hint align="end">{{OptionsSyncValidator.value.matinputvalue?.length || 0}}/10</mat-hint>
+            </mat-form-field>
+            <mat-form-field>
+            <input matInput placeholder="Simple Placeholder" formControlName="matinputNextvalue" >
+
+            <mat-hint [align]="OptionsSyncValidator.value.alignhint" *ngIf="controlSyncValidatornext.invalid || OptionsSyncValidator.hasError('identityRevealed') ">{{getSyncValidatorMessagenext()}}</mat-hint>
+            <mat-hint align="end">{{OptionsSyncValidator.value.matinputNextvalue?.length || 0}}/10</mat-hint>
+  
+        </mat-form-field>
+        </mat-card>
+    </form>
+    Value of optionsErrorMatch: <pre> {{ OptionsSyncValidator.value | json }} </pre>
+    Status of Value of optionsErrorMatch: {{OptionsSyncValidator.status}}
 </div>
 <div *ngIf="svc.hellotext === 'fcarray-AsyncValidator'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
     <pre>
             Show the AsyncValidator
     </pre>
+    <form  [formGroup]="OptionsASyncValidator">
+        <mat-card style = "background-color:cornflowerblue;"  fxLayout="column">
 
+            <mat-form-field>                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue" >
+                <mat-hint align="end">{{OptionsASyncValidator.value.matinputvalue?.length || 0}}/10</mat-hint>
+                <mat-error *ngIf="controlASyncValidator.invalid">{{getASyncValidatorMessage()}}</mat-error>
+            </mat-form-field>
+        </mat-card>
+    </form>
+    Value of optionsErrorMatch: <pre> {{ OptionsASyncValidator.value | json }} </pre>
+    Status of Value of optionsErrorMatch: {{OptionsASyncValidator.status}}
 </div>

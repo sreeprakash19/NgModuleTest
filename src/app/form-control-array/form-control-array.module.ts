@@ -8,6 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppMaterialModule} from '../app-material/app-material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [FormControlArrayComponent],
@@ -18,7 +19,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     SharedModule,
     ReactiveFormsModule,
     AppMaterialModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    HttpClientModule
   ]
 })
 export class FormControlArrayModule { }

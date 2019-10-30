@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { UserService, College, CollegeEmp, CollegeDept } from '../user.service';
 import { Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray,  FormGroupDirective, NgForm, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators, ValidationErrors,
+  FormControl, FormArray,  FormGroupDirective, NgForm, ValidatorFn } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
+import {map } from 'rxjs/operators';
+import {UniqueAlterEgoValidator } from '../uniquetext.service';
 
 @Component({
   selector: 'app-form-control-array',
@@ -15,13 +18,16 @@ export class FormControlArrayComponent implements OnInit {
   optionsHint : FormGroup;
   optionsError : FormGroup;
   optionsErrorMatch: FormGroup;
+  OptionsSyncValidator: FormGroup;
+  OptionsASyncValidator: FormGroup;
   errorMatcher = new CrossFieldErrorMatcher();
-  constructor(public svc: UserService, public formBuilder: FormBuilder, private afs: AngularFirestore) {
+  constructor(public svc: UserService, public formBuilder: FormBuilder, private afs: AngularFirestore,
+              private alterEgoValidator: UniqueAlterEgoValidator) {
     const controlValue = new FormControl('some value'); 
-    console.log('controlValue: value', controlValue.value);     // 'some value'
+    //console.log('controlValue: value', controlValue.value);     // 'some value'
 
     const controlStatus = new FormControl({ value: null, disabled: true });
-    console.log('controlStatus: value', controlStatus.value);   // 'n/a' console.log(control.status);    // 'DISABLED'
+    //console.log('controlStatus: value', controlStatus.value);   // 'n/a' console.log(control.status);    // 'DISABLED'
 
     
     
@@ -146,6 +152,7 @@ DISABLED: This control is exempt from validation checks.
       }
       if (this.svc.hellotext === 'fcarray-errstatematch') {
         this.svc.footerdisplay = `
+        Check - https://stackblitz.com/edit/mat-error-parent-validation?file=src%2Fapp%2Fapp.component.ts
         import { ErrorStateMatcher } from '@angular/material';
         Implement:
         class CrossFieldErrorMatcher implements ErrorStateMatcher {
@@ -189,15 +196,143 @@ DISABLED: This control is exempt from validation checks.
 
         `;
       }
-      
-     
+      if (this.svc.hellotext === 'fcarray-syncValidator') {
+        this.svc.footerdisplay = `
+        In the component:
+        this.OptionsSyncValidator = this.formBuilder.group({
+          alignhint: 'start',
+          matinputvalue: ['', Validators.compose(
+            [ Validators.required, Validators.minLength(3)]
+          ) ],
+          matinputNextvalue: ['', Validators.compose(
+            [ Validators.required, Validators.minLength(3)]
+          ) ],
+        },   { validators: this.identityRevealedValidator });
+        Difference between ErrorStateMatcher -> identityRevealedValidator is a FormGroup Validator and
+         sets the error for the whole FormGroup
+        
+        `;
+        this.svc.sidebardisplay = `
+        Other inbuilt Validators are
+        Validators.email,
+        Validators.length,
+        Validators.max,
+        Validators.maxLength,
+        Validators.min,
+        Validators.minLength,
+        Validators.pattern,
+        Validators.required,
+        Validators.requiredTrue,
+        Validators.compose 
+        `;
+        this.svc.resultdisplay = `
+        <form  [formGroup]="OptionsSyncValidator">
+        <mat-card style = "background-color:cornflowerblue;"  fxLayout="column">
+
+            <mat-form-field>                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue" >
+                <mat-hint [align]="OptionsSyncValidator.value.alignhint" *ngIf="controlSyncValidator.invalid">{{getSyncValidatorMessage()}}</mat-hint>
+                <mat-hint align="end">{{OptionsSyncValidator.value.matinputvalue?.length || 0}}/10</mat-hint>
+            </mat-form-field>
+            <mat-form-field>
+            <input matInput placeholder="Simple Placeholder" formControlName="matinputNextvalue" >
+
+            <mat-hint [align]="OptionsSyncValidator.value.alignhint" *ngIf="controlSyncValidatornext.invalid || OptionsSyncValidator.hasError('identityRevealed') ">{{getSyncValidatorMessagenext()}}</mat-hint>
+            <mat-hint align="end">{{OptionsSyncValidator.value.matinputNextvalue?.length || 0}}/10</mat-hint>
+  
+        </mat-form-field>
+        </mat-card>
+    </form>
+    Value of optionsErrorMatch: <pre> {{ OptionsSyncValidator.value | json }} </pre>
+    Status of Value of optionsErrorMatch: {{OptionsSyncValidator.status}}
+        `;
+        this.svc.moredisplay= `
+        <mat-hint [align]="OptionsSyncValidator.value.alignhint" *ngIf="controlSyncValidatornext.invalid || OptionsSyncValidator.hasError('identityRevealed') ">{{getSyncValidatorMessagenext()}}</mat-hint>
+        This will show the Hint text for both Form Level error and control level error.
+        `;
+      }
+      if (this.svc.hellotext === 'fcarray-AsyncValidator') {
+        this.svc.footerdisplay = `
+        this.OptionsASyncValidator = this.formBuilder.group({
+          alignhint: 'start',
+          matinputvalue: ['',  
+          {asyncValidators: [this.alterEgoValidator.validate.bind(this.alterEgoValidator)],]
+        });
+
+        Create the Async Validator in the service 
+        `;
+        this.svc.sidebardisplay = `
+
+        Inside the service:
+        import {
+          AsyncValidator,
+          AbstractControl,
+          ValidationErrors
+        } from '@angular/forms';
+        import { catchError } from 'rxjs/operators';
+          Add a Service Function: 
+          @Injectable({ providedIn: 'root' })
+          export class UniqueAlterEgoValidator implements AsyncValidator {
+            constructor(private svc: UserService) {}
+          
+            validate(
+              ctrl: AbstractControl
+            ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> {
+              return this.svc.isAlterEgoTaken(ctrl.value).pipe(
+                map(isTaken => (isTaken ? { uniqueAlterEgo: true } : null)),
+                catchError(() => null)
+              );
+            }
+          }
+          Implement the function - isAlterEgoTaken
+          import { delay } from 'rxjs/operators';
+          const ALTER_EGOS = ['Eric'];
+        `;
+        this.svc.resultdisplay = `
+        isAlterEgoTaken(alterEgo: string): Observable<boolean> {
+          const yestaken = true;
+          const nottaken = false;
+          const isTaken = ALTER_EGOS.filter(s => s.includes(alterEgo));
+          if (isTaken.length === 0) {
+            return of(nottaken).pipe(delay(400));
+          } else {
+            return of(yestaken).pipe(delay(400));
+          }
+          In the component- 
+          import { UniqueAlterEgoValidator } from '../user.service';
+          And inject in the constructor
+          constructor(private alterEgoValidator: UniqueAlterEgoValidator) { }
+          And in the component:
+          get controlASyncValidator(){
+            return this.OptionsASyncValidator.get('matinputvalue'); 
+          }
+          getASyncValidatorMessage() {
+            return this.OptionsASyncValidator.get('matinputvalue').hasError('required') ? 'You must enter a value' :
+            this.OptionsASyncValidator.get('matinputvalue').hasError('uniqueAlterEgo') ? 'Please enter a different text - Eric' :'' ;
+          }
+
+        `;
+        this.svc.moredisplay= `
+        If Eric is entered then Async Validator will have error 'uniqueAlterEgo'
+        In the template:
+        <form  [formGroup]="OptionsASyncValidator">
+        <mat-card style = "background-color:cornflowerblue;"  fxLayout="column">
+
+            <mat-form-field>                
+                <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue" >
+                <mat-hint align="end">{{OptionsASyncValidator.value.matinputvalue?.length || 0}}/10</mat-hint>
+                <mat-error *ngIf="controlASyncValidator.invalid">{{getASyncValidatorMessage()}}</mat-error>
+            </mat-form-field>
+        </mat-card>
+    </form>
+    Value of optionsErrorMatch: <pre> {{ OptionsASyncValidator.value | json }} </pre>
+    Status of Value of optionsErrorMatch: {{OptionsASyncValidator.status}}
+        `;
+      }
     });
 
   }
 
-  myAsyncValidator() {
-
-  }
   ngOnInit() {
     if (this.svc.hellotext === '') {
         this.svc.footerdisplay = `My Idea:
@@ -256,8 +391,33 @@ DISABLED: This control is exempt from validation checks.
       alignhint: 'start',
       matinputvalue: ['', [ Validators.required, Validators.minLength(3) ]],
       matinputvalueconfirm: ['', Validators.required ]
-    }, { validator: this.passwordValidator});
+    }, { validator: this.passwordValidator}); // <-- FormGroup validator for error state matcher
 
+    this.OptionsSyncValidator = this.formBuilder.group({
+      alignhint: 'start',
+      matinputvalue: ['', Validators.compose(
+        [ Validators.required, Validators.minLength(3)]
+      ) ],
+      matinputNextvalue: ['', Validators.compose(
+        [ Validators.required, Validators.minLength(3)]
+      ) ],
+    },   { validators: this.identityRevealedValidator }); // <-- add custom validator at the FormGroup level);
+
+    this.OptionsASyncValidator = this.formBuilder.group({
+      alignhint: 'start',
+      matinputvalue: ['',  Validators.compose([Validators.required]),  Validators.composeAsync([
+      this.alterEgoValidator.validate.bind(this.alterEgoValidator)])]
+    });
+
+  }
+  identityRevealedValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+    const name = control.get('matinputvalue');
+    const alterEgo = control.get('matinputNextvalue');
+    if(name !== null && alterEgo !== null){
+      return name && alterEgo && name.value === alterEgo.value ? { identityRevealed: true } : null;
+    }
+  
+   
   }
 
   get controlError() { 
@@ -266,6 +426,16 @@ DISABLED: This control is exempt from validation checks.
   get controlErrorMatch() { 
     return this.optionsErrorMatch.get('matinputvalue'); 
   }
+  get controlSyncValidator(){
+    return this.OptionsSyncValidator.get('matinputvalue'); 
+  }
+  get controlSyncValidatornext(){
+    return this.OptionsSyncValidator.get('matinputNextvalue'); 
+  }
+  get controlASyncValidator(){
+    return this.OptionsASyncValidator.get('matinputvalue'); 
+  }
+  
   getErrorMessage() {
     return this.optionsError.get('matinputvalue').hasError('required') ? 'You must enter a value' :
     this.optionsError.get('matinputvalue').hasError('minlength') ? 'Please Enter 3 characters' :'' ;
@@ -274,10 +444,25 @@ DISABLED: This control is exempt from validation checks.
     return this.optionsErrorMatch.get('matinputvalue').hasError('required') ? 'You must enter a value' :
     this.optionsErrorMatch.get('matinputvalue').hasError('minlength') ? 'Please Enter 3 characters' :'' ;
   }
+  getSyncValidatorMessage() {
+    return this.OptionsSyncValidator.get('matinputvalue').hasError('required') ? 'You must enter a value' :
+    this.OptionsSyncValidator.get('matinputvalue').hasError('minlength') ? 'Please Enter 3 characters' : '';
+  }
+  getSyncValidatorMessagenext() {
+    return this.OptionsSyncValidator.get('matinputNextvalue').hasError('required') ? 'You must enter a value' :
+    this.OptionsSyncValidator.get('matinputNextvalue').hasError('minlength') ? 'Please Enter 3 characters' :
+    this.OptionsSyncValidator.hasError('identityRevealed') ? 'Identity revealed' : '';
+  }
+  getASyncValidatorMessage() {
+    return this.OptionsASyncValidator.get('matinputvalue').hasError('required') ? 'You must enter a value' :
+    this.OptionsASyncValidator.get('matinputvalue').hasError('uniqueAlterEgo') ? 'Please enter a different text - Eric' :'' ;
+  }
+ 
   passwordValidator(form: FormGroup) {
     const condition = form.get('matinputvalue').value !== form.get('matinputvalueconfirm').value;
     return condition ? { passwordsDoNotMatch: true} : null;
   }
+
 }
 
 
