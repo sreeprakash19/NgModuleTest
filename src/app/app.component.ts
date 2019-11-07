@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import { UserService } from './user.service';
+import { routerTransition } from './route.animation';
 
 export interface Pokemon {
   value: string;
@@ -17,13 +18,32 @@ export interface PokemonGroup {
 
 @Component({
   selector: 'app-root',
+  animations: [ routerTransition ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title = 'test';
-  pokemonControl = new FormControl('fcarray-start');
+  pokemonControl = new FormControl('');
   pokemonGroups: PokemonGroup[] = [
+    {
+      name: 'Route Animation',
+      pokemon: [
+        {value: 'lazy/1', viewValue: 'Lazy Page /1'}
+      ]
+    },    
+    {
+      name: 'MainPage',
+      pokemon: [
+        {value: 'main-page', viewValue: 'Main Page Tests'}
+      ]
+    },    
+    {
+      name: 'AutoComplete',
+      pokemon: [
+        {value: 'feature-autocomplete', viewValue: 'AutoComplete Feature'}
+      ]
+    },
     {
       name: 'FormControl Array',
       pokemon: [
@@ -78,6 +98,36 @@ export class AppComponent {
   pokemonControltc = new FormControl({value: '', disabled: true});
   pokemonGroupstc: PokemonGroup[] = [
     {
+      name: 'Route Animation',
+      pokemon: [
+        {value: 'lazy/1', viewValue: 'Go to Lazy Page /1'}
+      ]
+    },   
+    {
+      name: 'MainPage',
+      pokemon: [
+        {value: 'main-page', viewValue: 'FG Values'},
+        {value: 'ref-aray', viewValue: 'Family References'},
+        {value: 'ref-friends', viewValue: 'Friends References'},
+        {value: 'claim-array', viewValue: 'Gift Claims'},
+        {value: 'fn-array', viewValue: 'Function Invites'},
+        {value: 'link-req', viewValue: 'Link Requests'},
+        {value: 'claim-settings', viewValue: 'Family Claims'},
+        {value: 'search-settings', viewValue: 'Family Search'},
+        {value: 'sc-write', viewValue: 'SubCollection- write'},
+        {value: 'sc-read', viewValue: 'SubCollection-SingleQuery'},
+        {value: 'sc-writearray', viewValue: 'SubCollection-arrayAdd'},
+        {value: 'sc-queryarray', viewValue: 'SubCollection-queryAdd'}
+      ]
+    }, 
+    {
+      name: 'autocomplete TC',
+      pokemon: [
+        {value: 'feature-autocomplete', viewValue: 'Initial autocomplete'},
+        {value: 'autocomplete-localArray', viewValue: 'Save in LocalArray'}
+      ]
+    },
+    {
       name: 'FormControl Array',
       pokemon: [
         {value: 'fcarray-start', viewValue: 'Initial FormControl'},
@@ -87,7 +137,10 @@ export class AppComponent {
         {value: 'fcarray-errstatematch', viewValue: 'Error State Match'},
         {value: 'fcarray-syncValidator', viewValue: 'Sync Validator'},
         {value: 'fcarray-AsyncValidator', viewValue: 'Async Validator'},
-        
+        {value: 'fcarray-localarray', viewValue: 'FormControl Methods'},
+        {value: 'fcarray-firestoreArray', viewValue: 'Array- FormControl '},
+        {value: 'fcarray-firestoreControl', viewValue: 'Array- FormGroup '},
+        {value: 'fcarray-select', viewValue: 'Mat-select Array '}             
       ]
     },   
     {
@@ -188,5 +241,8 @@ export class AppComponent {
       this.svc.sendData(location);
       this.router.navigateByUrl(location);
     }
+  }
+  getState(outlet) {
+    return outlet.activatedRouteData.state;
   }
 }

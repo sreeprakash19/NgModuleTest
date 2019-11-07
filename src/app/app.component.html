@@ -50,9 +50,9 @@
     </div>
   
     <div gdArea="content" [ngStyle]="{'border': '1px solid black', 'border-radius': '8px', 'background-color':'cornsilk', 'font-family': 'Lato'}">
-      <div>
+      <div [@routerTransition]="getState(o)">
   
-        <router-outlet></router-outlet>
+        <router-outlet #o="outlet"></router-outlet>
   
       </div>
     </div>

@@ -1,4 +1,25 @@
 
+<div *ngIf="svc.hellotext === ''" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+        Completed:
+        1. Mat Form Field
+        2. Mat Input
+        3. Mat Label
+        4. Mat Hint
+        5. Mat Error
+        6. Error State Matcher
+        7. Sync Validators - builtin & custom
+        8. Async Validators - based on user debounce Time
+    
+        Todo: 
+        1. FormControl - Patch , set , reset, getRawValue, Value, status from local Array and Firebase
+        2. Add FormGroup inside a FormGroup
+        3. Add , Delete FormControl to a FormArray.
+        4. Save FormArray to a Firestore Array
+        5. Use FlexBox and Material to design the Pages
+    </pre>  
+
+</div>
 <div *ngIf="svc.hellotext === 'fcarray-start'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
     <pre>
             FormControl Value in Console
@@ -27,9 +48,27 @@
                     <input matInput placeholder="Simple placeholder" formControlName = "matinputvalue" style = "background-color:cornflowerblue;" >
                     <mat-icon matSuffix>error_outline</mat-icon>
                 </mat-form-field>
-            </mat-card-header>
-               
+            </mat-card-header>               
         </mat-card>
+<!--
+        type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
+        FloatLabelType ('never', 'always', 'auto')
+        hideRequiredMarker: (true, false) - does not work with FormControl Validators
+        style = "background-color:cornflowerblue;" needs to override color: 'primary',
+    
+         <mat-card style = "background-color:cornflowerblue;">
+            <mat-card-header >
+                <mat-form-field  
+                appearance= "fill"
+                color= "primary"
+                floatLabel = "auto"
+                hintLabel = "Enter ProfileDetails">
+                <use - mat-label if the input is not matInput>
+                <input matInput placeholder="Simple placeholder" formControlName = "matinputvalue" style = "background-color:cornflowerblue;" >
+                </mat-form-field>
+            </mat-card-header>
+        </mat-card>
+    -->
         
     </form>
     
@@ -65,9 +104,8 @@
             <mat-form-field>
                 
                 <input matInput placeholder="Simple Placeholder" formControlName="matinputvalue">
-                <mat-hint [align]="optionsError.value.alignhint" *ngIf="controlError.invalid">{{getErrorMessage()}}</mat-hint>
                 <mat-hint align="end">{{optionsError.value.matinputvalue?.length || 0}}/10</mat-hint>
-               
+                <mat-error  *ngIf="controlError.invalid">{{getErrorMessage()}}</mat-error>
             </mat-form-field>
         </mat-card>
     </form>
@@ -141,4 +179,163 @@
     </form>
     Value of optionsErrorMatch: <pre> {{ OptionsASyncValidator.value | json }} </pre>
     Status of Value of optionsErrorMatch: {{OptionsASyncValidator.status}}
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-localarray'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+        Show the LocalArray Operations
+    </pre>  
+    
+    <form [formGroup]="userProfile"  (ngSubmit)="onSubmitProfile()">
+        <mat-card style = "background-color:cornflowerblue;">
+            <mat-card-content >
+                <div>
+                        <mat-form-field 
+                        appearance= "legacy"
+                        floatLabel = "auto"
+                        color= "primary"
+                        hintLabel = "Enter First Name" 
+                        >                
+                        <input matInput placeholder="Enter name" formControlName = "firstName" style = "background-color:cornflowerblue;" >
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field 
+                        appearance= "legacy"
+                        floatLabel = "auto"
+                        color= "primary"
+                        hintLabel = "Enter Last Name" 
+                        >                
+                        <input matInput placeholder="Enter last Name" formControlName = "lastName" style = "background-color:cornflowerblue;" >
+                        </mat-form-field>   
+                    </div>
+                    <mat-card-actions>
+                            <button mat-raised-button type="submit">Submit</button>
+                            <button mat-raised-button type="button" (click)="SetprofileValue()">SetProfile</button>
+                            
+                    </mat-card-actions>
+                    
+            </mat-card-content>
+        </mat-card>
+        Form Status: {{userProfile.status}}
+    </form>
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-firestoreArray'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+        Show the Firestore Array Operations
+        
+        <!--
+        
+        <pre>{{ownerProfile.value | json}}</pre>
+        FormGroup containing FormArray(of FormGroup)
+        <pre>{{ownerOptProfile.value | json}}</pre>
+        FromGroup containing FormArray(of FormControls)
+        <pre>{{modOwnerProfile.value | json}}</pre>-->
+    </pre>  
+
+    <!--Case1. FromGroup containing FormArray(of FormControls)-->
+
+        FromGroup containing FormArray(of FormControls)
+        <pre>{{modOwnerProfile.value | json}}</pre>
+       
+
+
+
+        
+        <form [formGroup]="modOwnerProfile"  (ngSubmit)="onSubmitmodOwnerProfile()">
+                <mat-card style = "background-color:cornflowerblue;">
+                    <mat-card-content >
+                        <div formArrayName ="aliases">
+                            <mat-label>Aliases</mat-label> 
+                                <button mat-raised-button (click)="addAlias()">Add Alias</button>
+                                
+                                <div *ngFor="let myname of modOwnerProfile.get('aliases').controls; let i=index" >
+                                    <mat-form-field>
+                                    <input matInput placeholder="Enter LastName" [formControlName]= "i" style = "background-color:cornflowerblue;" >
+                                    </mat-form-field>
+                                </div>
+                                <button mat-raised-button (click)="clearAlias()">Clear Alias</button>
+                            </div>
+                    </mat-card-content>
+                </mat-card>
+            </form> 
+
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-firestoreControl'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+        <pre>
+            Show the Firestore Array Operations
+            
+            <!--
+            
+            <pre>{{ownerProfile.value | json}}</pre>
+            FormGroup containing FormArray(of FormGroup)
+            <pre>{{ownerOptProfile.value | json}}</pre>
+            FromGroup containing FormArray(of FormControls)
+            <pre>{{modOwnerProfile.value | json}}</pre>-->
+        </pre>  
+    
+        <!--Case1. FromGroup containing FormArray(of FormControls)-->
+    
+            FromGroup containing FormArray(of FormControls)
+            <pre>{{ownerOptProfile.value | json}}</pre>
+                        
+            <form [formGroup]="ownerOptProfile"  (ngSubmit)="onSubmitmodOwnerProfile()">
+                    <mat-card style = "background-color:cornflowerblue;">
+                        <mat-card-content >
+                            <div formArrayName ="vehicles">
+                                <mat-label>vehicles</mat-label> 
+                                    <button mat-raised-button (click)="addVechicle()">Add vehicles</button>
+                                    <div *ngFor="let myvehicles of ownerOptProfile.get('vehicles').controls; let i=index" [formGroupName]="i">
+                                        <mat-form-field>
+                                            <input matInput placeholder="Enter Model" formControlName = "model" style = "background-color:cornflowerblue;" >
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                        </mat-card-content>
+                    </mat-card>
+                </form> 
+</div>
+<div *ngIf="svc.hellotext === 'fcarray-select'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+        Show the Array elements to a select
+    </pre>  
+    <pre>
+        {{demoForm.value | json}}
+        local Array-
+        {{arrayItems | json}}
+    </pre>
+    <form [formGroup]="demoForm">
+        <mat-card style = "background-color:cornflowerblue;">
+                <mat-card-content >
+                    <div formArrayName="demoArray" 
+                        *ngFor="let arrayItem of arrayItems; let i=index">
+                        //input
+                        <input [id]="arrayItem.id" type="checkbox"
+                            [formControl]="demoArray.controls[i]">
+                        <label [for]="arrayItem.id" class="array-item-title">
+                            {{arrayItem.title}}</label>
+                        
+                        //mat-select
+                        <mat-form-field>
+                                <mat-label>Favorite food</mat-label>
+                                <mat-select  [formControl]="demoArray.controls[i]">
+                                <mat-option *ngFor="let arrayItem of arrayItems" [value]="arrayItem.title">
+                                    {{arrayItem.id}}
+                                </mat-option>
+                                </mat-select>
+                        </mat-form-field>
+
+
+                         
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-raised-button (click)= "addItem()">Add item & demoForm</button>
+                    <button mat-raised-button (click)= "addItemNext()">Add Next</button>
+                    
+                    <button mat-raised-button (click)= "removeItem()">Remove</button>
+                </mat-card-actions>
+            </mat-card>
+                    
+    </form>
+
 </div>
