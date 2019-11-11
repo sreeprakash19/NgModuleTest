@@ -12,6 +12,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { first } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import {MatBottomSheet} from '@angular/material';
 
 export interface UserInfo {
   AnniversaryDate: string;
@@ -64,29 +65,41 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
 
   constructor(private db: AngularFirestore, public svc: UserService,
               public afAuth: AngularFireAuth, private ref: ChangeDetectorRef,
-              private dialog: MatDialog) {
+              private dialog: MatDialog, private bottomSheet: MatBottomSheet) {
+                if ( this.svc.hellotext === 'login-photourldialog'){
+                
+                this.bottomSheet.open(BottomSheetExample);
+                }
     
   }
 
 
   ngOnInit() {
-    this.svc.footerdisplay = `
-    In app.module.ts add - import {MatCardModule} from '@angular/material/card';
-    in NgModule - MatCardModule
-
-    1. loginPass- User logs in and login is success
-    2. loginFail- User logs in and closes the popup and retry is shown
-    3. login retry pass: User Logs in success after retry
-    4. login photourlsave: After successfull login save the uid and photoURL
-    `;
     this.logout();
-    this.svc.sidebardisplay = ``;
-    this.svc.resultdisplay = `
-    Before Test
-    showspinner= ${this.showspinner}
-    showretry =  ${this.showretry}
-    retryoption= ${this.retryoption}
-    `;
+    if ( this.svc.hellotext === ''){
+      this.svc.footerdisplay = `
+      In app.module.ts add - import {MatCardModule} from '@angular/material/card';
+      in NgModule - MatCardModule
+  
+      1. loginPass- User logs in and login is success
+      2. loginFail- User logs in and closes the popup and retry is shown
+      3. login retry pass: User Logs in success after retry
+      4. login photourlsave: After successfull login save the uid and photoURL
+      `;
+      this.svc.sidebardisplay = ``;
+      this.svc.resultdisplay = `
+      Before Test
+      showspinner= ${this.showspinner}
+      showretry =  ${this.showretry}
+      retryoption= ${this.retryoption}
+      `;
+    }
+
+    if ( this.svc.hellotext === 'install-login'){
+
+    }
+
+   
   }
   docExists(uid: string) {
     return this.db.doc(`user/${uid}`).valueChanges().pipe(first()).toPromise();
@@ -421,3 +434,12 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
     this.afAuth.auth.signOut();
   }
 }
+
+
+@Component({
+  selector: 'app-bottom-sheet',
+  template: `
+  This is just a test
+  `
+})
+export class BottomSheetExample {}

@@ -11,6 +11,62 @@ fxLayoutGap="10%">
     <pre>
     1. AddControl an Array to a FormGroup-up
     </pre>
+    <form [formGroup]="form">
+        <mat-card style="background-color:cornflowerblue;">
+            <mat-card-header>
+                <mat-form-field>
+                    <input matInput placeholder="Claim State" aria-label="State" [matAutocomplete]="auto" [formControl]="claimStateCtrl">
+                    <mat-autocomplete #auto="matAutocomplete">
+                      <mat-option *ngFor="let state of filteredStates | async" [value]="state.eventName">
+                        <img class="example-option-img" aria-hidden [src]="state.photoUrl" height="25">
+                        <span>{{state.eventName}}</span> |
+                        <small>Amount: {{state.giftAmount}}</small>
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+            </mat-card-header>
+            
+            <mat-card-content>
+                <div formArrayName="profileDetails" class="player">
+                    <div *ngFor="let player of form.get('profileDetails').controls; let playerIndex = index" [formGroupName]="playerIndex" class="player-line">
+                        <label> User-id: <input formControlName="user_uid" type="text"></label>
+                        <hr/>
+                    </div>
+                </div>
+                <div formArrayName="familyDetails" class="player">
+                    <div *ngFor="let player of form.get('familyDetails').controls; let playerIndex = index" [formGroupName]="playerIndex" class="player-line">
+                        <label> Father's Father: <input formControlName="Father_FLink" type="text"></label>
+                        <hr/>
+                    </div>
+                </div>
+                <div formArrayName="KidsDetails" class="player">
+                    <div *ngFor="let player of form.get('KidsDetails').controls; let playerIndex = index" [formGroupName]="playerIndex" class="player-line">
+                        <label> Kid's Name: <input formControlName="Kid_name" type="text"></label>
+                        <hr/>
+                    </div>
+                </div>
+                <div formArrayName="claimDetails" class="player">
+                    <div *ngFor="let player of form.get('claimDetails').controls; let playerIndex = index" [formGroupName]="playerIndex" class="player-line">
+                        <label> Claimant Uid: <input formControlName="uid" type="text"></label>
+                        <hr/>
+                    </div>
+                </div>
+                <div formArrayName="invitesData" class="player">
+                    <div *ngFor="let player of form.get('invitesData').controls; let playerIndex = index" [formGroupName]="playerIndex" class="player-line">
+                        <label> Invite Uid: <input formControlName="uid" type="text"></label>
+                        <hr/>
+                    </div>
+                </div>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-raised-button (click)="Update()">Update</button>
+                <button mat-raised-button (click)="LoadValuechanges()">Load from DB</button>
+                <button mat-raised-button (click)="actualsave()">Update to DB</button>
+                <button mat-raised-button (click)="ClaimAdd()">Add a Claim</button>
+                <button mat-raised-button (click)="QueryData()">QueryData</button>
+           </mat-card-actions>
+        </mat-card>
+    </form>
 </div>
 
 <div *ngIf="svc.hellotext === 'ref-aray'" fxLayout="column" fxLayoutAlign="center center"

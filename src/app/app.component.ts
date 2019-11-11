@@ -24,7 +24,7 @@ export interface PokemonGroup {
 })
 export class AppComponent {
   title = 'test';
-  pokemonControl = new FormControl('');
+  pokemonControl = new FormControl('install-login');
   pokemonGroups: PokemonGroup[] = [
     {
       name: 'Route Animation',
@@ -117,7 +117,8 @@ export class AppComponent {
         {value: 'sc-write', viewValue: 'SubCollection- write'},
         {value: 'sc-read', viewValue: 'SubCollection-SingleQuery'},
         {value: 'sc-writearray', viewValue: 'SubCollection-arrayAdd'},
-        {value: 'sc-queryarray', viewValue: 'SubCollection-queryAdd'}
+        {value: 'sc-queryarray', viewValue: 'SubCollection-queryAdd'},
+        {value: 'login-screen', viewValue: 'Login Screen'}
       ]
     }, 
     {

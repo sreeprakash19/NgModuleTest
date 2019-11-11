@@ -1,6 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import * as firebase from 'firebase/app';
+import {map, startWith} from 'rxjs/operators';
+
+export interface ClaimState {
+  uid: string;
+  photoUrl: string;
+  eventUid: string;
+  eventName:  string;
+  giftAmount: string;
+}
+
 
 @Component({
   selector: 'app-main-page',
@@ -10,6 +23,8 @@ import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@ang
 
 export class MainPageComponent implements OnInit {
   form: FormGroup = null;
+  items: Observable<any>;
+
   profileDetails: any[] = [
     {
       "user_uid": "",
@@ -60,16 +75,10 @@ export class MainPageComponent implements OnInit {
 
   KidsDetails: any[] = [
     {
-      "Kid1_name": "",
-      "Kid1_Birth": "",
-      "Kid1_Anni": "",
-      "Kid1_Living": ""
-    },
-    {
-      "Kid2_name": "",
-      "Kid2_Birth": "",
-      "Kid2_Anni": "",
-      "Kid2_Living": ""
+      "Kid_name": "FirstKid",
+      "Kid_Birth": "",
+      "Kid_Anni": "",
+      "Kid_Living": ""
     }];
   claimDetails: any[] = [
     {
@@ -78,16 +87,6 @@ export class MainPageComponent implements OnInit {
       "eventUid": "",
       "eventName": "",
       "giftAmount": ""
-    }];
-  invitesFollowup: any[] = [
-    {
-      "uid": "",
-      "photoUrl": "",
-      "message": "",
-      "eventUid": "",
-      "eventName": "",
-      "giftAmount": "",
-      "inviteResp": ""
     }];
   invitesData: any[] = [
     {
@@ -101,10 +100,42 @@ export class MainPageComponent implements OnInit {
       "eventLocation": "",
       "eventMap": ""
     }];
+//Link Requests will come when you navigate to the page
 
-  constructor(public svc: UserService, public formBuilder: FormBuilder) { }
+    claimStateCtrl = new FormControl();
+    filteredStates: Observable<ClaimState[]>;
+    ClaimStates : ClaimState[] = null;
+  constructor(public svc: UserService, public formBuilder: FormBuilder, private afs: AngularFirestore) { 
 
+    this.filteredStates = this.claimStateCtrl.valueChanges
+    .pipe(
+      startWith(''),
+      map(state => state ? this._filterStates(state) : this.ClaimStates.slice())
+    );
+  }
+  private _filterStates(value: string): ClaimState[] {
+    const filterValue = value.toLowerCase();
+
+    return this.ClaimStates.filter(state => state.eventName.toLowerCase().indexOf(filterValue) === 0);
+  }
   ngOnInit() {
+    const citiesRef = this.afs.collection('UserData').doc('KjMfJfNSJzVuV7X5ds8Xu0KUCvG2');
+    this.items = citiesRef.valueChanges();
+    this.items.subscribe(val => {
+      //console.log('claimDetails', val.claimDetails);
+      this.ClaimStates = val.claimDetails;
+      const claimDetailsFGLoad: FormGroup[] = val.claimDetails.map(v => {
+        return this.formBuilder.group({
+          uid: [v.uid],
+          photoUrl: [v.photoUrl],
+          eventUid: [v.eventUid],
+          eventName: [v.eventName],
+          giftAmount: [v.giftAmount]
+        });
+      });
+      const claimDetailsFGArrayLoad: FormArray = new FormArray(claimDetailsFGLoad);
+      (this.form as FormGroup).setControl('claimDetails', claimDetailsFGArrayLoad);
+    });
     if (this.svc.hellotext === '') {
 
       this.svc.sidebardisplay = `      
@@ -262,6 +293,20 @@ export class MainPageComponent implements OnInit {
       this.svc.moredisplay = `      
     `;
     }
+    if (this.svc.hellotext === 'login-screen') {
+
+      this.svc.sidebardisplay = `      
+      
+    `;
+      this.svc.footerdisplay = `      
+    `;
+      this.svc.resultdisplay = `
+    `;
+      this.svc.moredisplay = `      
+    `;
+    }
+    
+
     this.form = this.formBuilder.group({
     });
 
@@ -340,21 +385,7 @@ export class MainPageComponent implements OnInit {
       });
     });
     const claimDetailsFGArray: FormArray = new FormArray(claimDetailsFG);
-    (this.form as FormGroup).addControl('claimDetails', KidsDetailsFGArray);
-
-    const invitesFollowupFG: FormGroup[] = this.invitesFollowup.map(v => {
-      return this.formBuilder.group({
-        uid: [v.uid],
-        photoUrl: [v.photoUrl],
-        message: [v.message],
-        eventUid: [v.eventUid],
-        eventName: [v.eventName],
-        giftAmount: [v.giftAmount],
-        inviteResp: [v.inviteResp]
-      });
-    });
-    const invitesFollowupFGArray: FormArray = new FormArray(invitesFollowupFG);
-    (this.form as FormGroup).addControl('invitesFollowup', invitesFollowupFGArray);
+    (this.form as FormGroup).addControl('claimDetails', claimDetailsFGArray);
 
     const invitesDataFG: FormGroup[] = this.invitesData.map(v => {
       return this.formBuilder.group({
@@ -372,5 +403,76 @@ export class MainPageComponent implements OnInit {
     const invitesDataFGArray: FormArray = new FormArray(invitesDataFG);
     (this.form as FormGroup).addControl('invitesData', invitesDataFGArray);
   }
+  Update() {
 
+  }
+  Load() {
+    const citiesRef = this.afs.collection('UserData').doc('KjMfJfNSJzVuV7X5ds8Xu0KUCvG2');
+    citiesRef.get().subscribe(snapshot => {
+      const claimDetailsFGLoad: FormGroup[] = snapshot.data().claimDetails.map(v => {
+        return this.formBuilder.group({
+          uid: [v.uid],
+          photoUrl: [v.photoUrl],
+          eventUid: [v.eventUid],
+          eventName: [v.eventName],
+          giftAmount: [v.giftAmount]
+        });
+      });
+      const claimDetailsFGArrayLoad: FormArray = new FormArray(claimDetailsFGLoad);
+      (this.form as FormGroup).setControl('claimDetails', claimDetailsFGArrayLoad);
+    });
+  }
+  LoadValuechanges() {
+
+
+    /*
+    citiesRef.get().subscribe(snapshot => {
+        const claimDetailsFGLoad: FormGroup[] = snapshot.data().claimDetails.map(v => {
+          return this.formBuilder.group({
+            uid: [v.uid],
+            photoUrl: [v.photoUrl],
+            eventUid: [v.eventUid],
+            eventName: [v.eventName],
+            giftAmount: [v.giftAmount]
+          });
+        });
+        const claimDetailsFGArrayLoad: FormArray = new FormArray(claimDetailsFGLoad);
+        (this.form as FormGroup).setControl('claimDetails', claimDetailsFGArrayLoad);
+    });*/
+
+  }
+  actualsave() {
+    const setDoc = this.afs.collection('UserData').doc('KjMfJfNSJzVuV7X5ds8Xu0KUCvG2').set(this.form.value);
+  }
+  QueryData() {
+
+  }
+  kidAdd() {
+    const addkids = this.form.controls.KidsDetails as FormArray;
+    addkids.push(this.formBuilder.group({
+      Kid_name: 'newkid',
+      Kid_Birth: '',
+      Kid_Anni: '',
+      Kid_Living: ''
+    }));
+  }
+
+  ClaimAdd() {
+    this.afs.collection('UserData').doc('KjMfJfNSJzVuV7X5ds8Xu0KUCvG2').update({
+      claimDetails : firebase.firestore.FieldValue.arrayUnion(
+        {
+          uid: 'newclaim',
+          photoUrl: 'https://lh3.googleusercontent.com/a-/AAuE7mDcM-XfiG-OgprYqulFoAgKDCAvnWSDiiLqiiXx',
+          eventUid: '',
+          eventName: 'Marriage',
+          giftAmount: '100'
+        }
+      )
+    });
+  }
 }
+
+/*
+let fruitsRef = db.collection("Fruits")
+    .whereField("vitamins.potassium", isEqualTo: true)
+    */

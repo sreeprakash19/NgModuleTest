@@ -52,6 +52,8 @@ const routes: Routes = [
   { path: 'sc-read', loadChildren: () => import('./main-page/main-page.module').then(m => m.MainPageModule) },
   { path: 'sc-writearray', loadChildren: () => import('./main-page/main-page.module').then(m => m.MainPageModule) },
   { path: 'sc-queryarray', loadChildren: () => import('./main-page/main-page.module').then(m => m.MainPageModule) },
+  { path: 'login-screen', loadChildren: () => import('./main-page/main-page.module').then(m => m.MainPageModule) },
+
   { path: 'lazy', loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule) }
 ];
 //Learning - if the Primary module lazy loads then it is same as app module
