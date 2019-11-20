@@ -54,7 +54,7 @@
                     Team Name <input type="text" formControlName="team_name">
                     
                     <div formArrayName="lines" >
-                      <div *ngFor="let line of cvForm.get('lines').controls; let lineIndex = index" [formGroupName]="lineIndex" class="line">
+                      <div *ngFor="let line of cvForm.get('lines')?.controls; let lineIndex = index" [formGroupName]="lineIndex" class="line">
                           <label> Line Name: <input formControlName="name" type="text"></label>
                           <div formArrayName="players" class="player">
                             <div *ngFor="let player of line.get('players').controls; let playerIndex = index" [formGroupName]="playerIndex" class="player-line">

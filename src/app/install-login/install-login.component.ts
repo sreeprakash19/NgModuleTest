@@ -70,7 +70,6 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
                 
                 this.bottomSheet.open(BottomSheetExample);
                 }
-    
   }
 
 
@@ -94,32 +93,50 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
       retryoption= ${this.retryoption}
       `;
     }
-
     if ( this.svc.hellotext === 'install-login'){
-
     }
-
-   
+    if ( this.svc.hellotext === 'login-DBNewUser'){
+      this.svc.footerdisplay = `
+      `;
+      this.svc.sidebardisplay = ``;
+      this.svc.resultdisplay = `
+      `;
+    }
+    if ( this.svc.hellotext === 'login-DBReadUser'){
+      this.svc.footerdisplay = `
+      `;
+      this.svc.sidebardisplay = ``;
+      this.svc.resultdisplay = `
+      `;
+    }
+    if ( this.svc.hellotext === 'login-Profilescr'){
+      this.svc.footerdisplay = `
+      `;
+      this.svc.sidebardisplay = ``;
+      this.svc.resultdisplay = `
+      `;
+    }
   }
+  //ngOninit
+
   docExists(uid: string) {
     return this.db.doc(`user/${uid}`).valueChanges().pipe(first()).toPromise();
-  }
+  }//user/uid exists or not
   docExistsOld(uid: string) {
     return this.db.doc(`users/${uid}`).valueChanges().pipe(first()).toPromise();
-  }
+  } //users/uid as docExists
   async findOrCreateOld(uid: string) {
     const doc = await this.docExistsOld(uid);
-
     if (doc) {
       ////await this.db.doc(`users/${uid}`).valueChanges().pipe(first()).subscribe((success: UserInfo) => {
       //});
       return 'doc exists';
     } else {
-
       //await this.db.doc(`users/${uid}`).set(data);
       return 'created new doc';
     }
-  }
+  }//docExists is called async and this function can be subscribed for result-> old user
+
   async findOrCreate(uid: string) {
     const doc = await this.docExists(uid);
 
@@ -132,12 +149,12 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
       //await this.db.doc(`users/${uid}`).set(data);
       return 'created new doc';
     }
-  }
+  }//docExists is called async and this function can be subscribed for result-> new user
+
   GoogleLogin() {
     this.showretry = true;
     this.showspinner = true;
     this.ref.detectChanges();
-
 
     const provider = new auth.GoogleAuthProvider();
     this.afAuth.auth.signInWithPopup(provider).then(successLogin => {
@@ -146,10 +163,10 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
         this.showretry = false;
         this.showspinner = false;
 
-        this.findOrCreate(successLogin.user.uid).then(result => {
+        this.findOrCreate(successLogin.user.uid).then(result => {//new user
           if( result != null) {
 
-            if (result !== 'created new doc') {//old user
+            if (result !== 'created new doc') { //old
               this.itemDoc.valueChanges().pipe(first()).toPromise().then( dbuser => {
                 this.saveData = dbuser;
                 this.svc.footerdisplay = JSON.stringify(dbuser, undefined, 4);
@@ -161,7 +178,7 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
                 console.log('Old User get data from db:', sendSaveData);
               });
 
-            } else
+            } else//new
             {
               this.saveData.displayName = successLogin.user.displayName;
               this.saveData.email = successLogin.user.email;
@@ -215,7 +232,7 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
         this.showretry = false;
         this.showspinner = false;
 
-        this.findOrCreateOld(successLogin.user.uid).then(result => {
+        this.findOrCreateOld(successLogin.user.uid).then(result => {//old user
           if( result != null) {
 
             if (result !== 'created new doc') {//old user
@@ -308,7 +325,7 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
   }
 
   GoogleLoginRetry() {
-    this.showretry = true;
+    this.showretry = true; //if fail show retry
     this.showspinner = true;
     const provider = new auth.GoogleAuthProvider();
 
@@ -356,7 +373,7 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
         this.showspinner = false;
         
 
-        this.findOrCreate(successLogin.user.uid).then(result => {
+        this.findOrCreate(successLogin.user.uid).then(result => { //new
           if( result != null) {
 
             if (result !== 'created new doc') {//old user
@@ -439,7 +456,9 @@ export class InstallLoginComponent implements OnInit, OnDestroy {
 @Component({
   selector: 'app-bottom-sheet',
   template: `
+  <pre style = "font-family: Lato">
   This is just a test
+  </pre>
   `
 })
 export class BottomSheetExample {}

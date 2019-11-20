@@ -1,9 +1,29 @@
 <div *ngIf="svc.hellotext === ''">
-    There are few Test cases for Login
+    <pre>
+        There are few Test cases for Login
         1. New User Pass
-            User Logsin using Button and Display shows Logging into Google Account with a mat-spinner
+            User Logs-in using Button- GoogleLogin()
+            Display shows Logging into Google Account with a mat-spinner
             If the login fails then show the retry button.
-        2.
+            If the login passes then the console shows either new or old user info
+        A. showretry = false 
+        B. Constructor calls logout -> showspinner = false and calls auth.signOut()
+        C. User clicks GoogleLogin button ->   showretry = true , showspinner = true, till signInWithPopup returns a response
+        D. if auth.signInWithPopup(provider) is success ->  showretry = false, showspinner = false, continue with DB Setup
+        E. if auth.signInWithPopup(provider) is failure ->  showretry = true, showspinner = false, And show the error for retry
+
+        Other Testcases are
+        2. Old User pass
+        3. Login Fail -> show retry
+        4. Retry Pass/ Fail
+        5. Show Bottom Sheet
+
+        Integration Testcases
+        1. DB Write New User Data - 'DBNewUser'
+        2. Read Old User Data - 'DBReadUser'
+        3. Navigate to the profile screen - 'Profilescr'
+        4. 
+    </pre>
 
 </div>
 <div *ngIf="svc.hellotext === 'install-login'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
@@ -161,4 +181,17 @@
 
 
 
+</div>
+
+<div *ngIf="svc.hellotext === 'login-DBNewUser'">
+
+</div>
+
+
+<div *ngIf="svc.hellotext === 'login-DBReadUser'">
+
+</div>
+
+<div *ngIf="svc.hellotext === 'login-Profilescr'">
+    
 </div>

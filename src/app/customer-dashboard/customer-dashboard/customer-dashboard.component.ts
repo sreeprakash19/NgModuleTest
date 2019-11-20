@@ -28,7 +28,18 @@ export class CustomerDashboardComponent implements OnInit {
     Plan: Use commands to create a branch from master 
     Use cli to create Feature module-CustomerDashboard using angular-cli
     Use cli to create module-app-material.
-    Use cli to create shared module-shared importing common module but exporting common/forms Module`;
+    Use cli to create shared module-shared importing common module but exporting common/forms Module
+    
+  To update the Global cli -
+  Global package:
+
+npm uninstall -g @angular/cli
+npm cache verify
+npm install -g @angular/cli@latest
+
+    Go to the local project
+    ng update @angular/cli @angular/core
+    `;
   }
   
   ngOnInit() {

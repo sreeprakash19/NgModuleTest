@@ -1,0 +1,35 @@
+<div *ngIf="svc.hellotext === ''" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+        Testcase for loading old user data
+    </pre>
+</div>
+<div *ngIf="svc.hellotext === 'loginscreen-start'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <div>
+        Login pass-> old User -> Load data from DB
+    </div>
+
+
+
+<div *ngIf="showspinner" fxLayout="column" fxLayoutAlign="space-around center" 
+style="height: auto; margin: 10%; padding:10%; overflow: hidden;">
+<mat-spinner ></mat-spinner>
+</div>
+
+
+<div *ngIf="!showspinner" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <button mat-raised-button *ngIf="showlogin" color="primary" (click)="GoogleLogin()">
+        Google login
+    </button>
+    <button mat-raised-button *ngIf="shownewUser" color="primary" (click)="NewUserContinue()">
+        New User
+    </button>
+    <button mat-raised-button *ngIf="showoldUser" color="primary" (click)="OldUserContinue()">
+        Old login
+    </button>
+    <button mat-raised-button *ngIf="showretry" color="primary" (click)="GoogleLogin()">
+        Retry Login
+    </button>
+
+</div>
+
+</div>

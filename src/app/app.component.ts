@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import { UserService } from './user.service';
-import { routerTransition } from './route.animation';
+
 
 export interface Pokemon {
   value: string;
@@ -18,14 +18,19 @@ export interface PokemonGroup {
 
 @Component({
   selector: 'app-root',
-  animations: [ routerTransition ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title = 'test';
-  pokemonControl = new FormControl('install-login');
+  pokemonControl = new FormControl('loginscreen-start');
   pokemonGroups: PokemonGroup[] = [
+    {
+      name: 'Login Screen',
+      pokemon: [
+        {value: 'loginscreen-start', viewValue: 'Start Screen'}
+      ]
+    }, 
     {
       name: 'Route Animation',
       pokemon: [
@@ -97,6 +102,14 @@ export class AppComponent {
   ];
   pokemonControltc = new FormControl({value: '', disabled: true});
   pokemonGroupstc: PokemonGroup[] = [
+    
+    {
+      name: 'Login Screen',
+      pokemon: [
+        {value: 'loginscreen-start/login', viewValue: 'No Animations'},
+        {value: 'loginscreen-start', viewValue: 'Login Screen'}
+      ]
+    },
     {
       name: 'Route Animation',
       pokemon: [
@@ -158,7 +171,10 @@ export class AppComponent {
         {value: 'login-fail', viewValue: 'LoginFail'},
         {value: 'login-retry', viewValue: 'LoginRetryPass'},
         {value: 'login-photourl', viewValue: 'LoginPhotoURLSaved'},
-        {value: 'login-photourldialog', viewValue: 'PhotoURLDialog'}
+        {value: 'login-photourldialog', viewValue: 'PhotoURLDialog'},
+        {value: 'login-DBNewUser', viewValue: 'DBNewUser'},
+        {value: 'login-DBReadUser', viewValue: 'DBReadUser'},
+        {value: 'login-Profilescr', viewValue: 'Profilescr'}
       ]
     },
     {

@@ -1,0 +1,14 @@
+<div *ngIf="svc.hellotext === ''" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <pre>
+    </pre>
+</div>
+<div *ngIf="svc.hellotext === 'loginscreen-start/login'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <div>
+        Show Authentication tests- Auth Pass - New User
+    </div>
+
+    <button mat-raised-button *ngIf="!showretry" color="primary" (click)="GoogleLogin()">
+        Google login
+    </button>
+   
+</div>

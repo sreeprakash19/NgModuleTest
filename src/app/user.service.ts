@@ -5,6 +5,13 @@ import { of } from 'rxjs';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { auth } from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { first } from 'rxjs/operators';
+import {
+  AngularFirestoreDocument,
+  AngularFirestore
+} from '@angular/fire/firestore';
 
 import {
   AsyncValidator,
@@ -110,9 +117,13 @@ export class UserService {
   sidebardisplay = '';
   resultdisplay = '';
   moredisplay = '';
+  hellostring = '';
   public myData: BehaviorSubject<number> = new BehaviorSubject<number>(this.hello);
+  public myLoginData: BehaviorSubject<string> = new BehaviorSubject<string>(this.hellostring);
+
+
   myarray: any[];
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,  public afAuth: AngularFireAuth, private afs: AngularFirestore) { }
 
   increaseCounter() {
     this.counter++;
@@ -158,7 +169,35 @@ export class UserService {
       return of(yestaken).pipe(delay(400));
     }
   }
+  onLoginGoogle()   {
+    this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(successLogin =>{
+      this.findOrCreate(successLogin.user.uid).then(result => {
+        if( result != null) {
+          if (result === 'created new doc') { 
+            this.myLoginData.next('new');
+          }else
+          {
+            this.myLoginData.next('old');
+          }
+        }
+      });
+    }).catch(error => {
+      this.myLoginData.next('error');
+    });
+  }
 
+  docExists(uid: string) {
+    return this.afs.doc(`UserData/${uid}`).valueChanges().pipe(first()).toPromise();
+  }
+  async findOrCreate(uid: string) {
+    const doc = await this.docExists(uid);
+    console.log('doc returned', doc);
+    if (doc) {
+      return 'doc exists';
+    } else {
+      return 'created new doc';
+    }
+  }
 }
 
 
