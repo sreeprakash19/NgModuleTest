@@ -9,17 +9,17 @@ import {
   FormControl, FormArray, FormGroupDirective, NgForm, ValidatorFn
 } from '@angular/forms';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
 export interface DialogData {
-  displayName : string;
+  displayName: string;
   email: string;
   phoneNumber: string;
   photoURL: string;
 }
 export interface MyUserData {
-  profileData: Array<DialogData>; 
+  profileData: Array<DialogData>;
 }
 
 @Component({
@@ -28,23 +28,24 @@ export interface MyUserData {
   styleUrls: ['./loaduser-data.component.css']
 })
 export class LoaduserDataComponent implements OnInit {
-  
+
   demoForm = this.formBuilder.group({
-    profileDetails: this.formBuilder.array([])
+    profileData: this.formBuilder.array([])
   });
-  showspinner= false;
-  showlogin= true;
-  shownewUser= false;
-  showoldUser= false;
-  showretry= false;
+  showspinner = false;
+  showlogin = true;
+  shownewUser = false;
+  showoldUser = false;
+  showretry = false;
   private itemDoc: AngularFirestoreDocument<MyUserData>;
   somedata: Observable<MyUserData>;
   savedData: MyUserData;
-  singleData :  DialogData;
-  constructor(public svc: UserService, public afAuth: AngularFireAuth, private afs: AngularFirestore, 
-              public dialog: MatDialog, public formBuilder: FormBuilder) {
+  singleData: DialogData;
+  MultipleData :  Array<DialogData>;
+  constructor(public svc: UserService, public afAuth: AngularFireAuth, private afs: AngularFirestore,
+    public dialog: MatDialog, public formBuilder: FormBuilder) {
     this.GoogleLogout();
-   }
+  }
 
   ngOnInit() {
   }
@@ -53,40 +54,40 @@ export class LoaduserDataComponent implements OnInit {
     return this.afs.doc(`testcollection/${uid}`).valueChanges().pipe(first()).toPromise();
   }
   async findOrCreate(uid: string) {
-    
+
     const doc = await this.docExists(uid);
-    
+
     if (doc) {
       this.itemDoc = this.afs.doc<MyUserData>(`testcollection/${uid}`);
       this.somedata = this.itemDoc.valueChanges();
 
       this.somedata.subscribe(v => {
-        //v.profileData.map( mydata => {
-          //const peopleArray = Object.values(mydata)
-        //const employeeFormGroups = v.profileData.map(details => this.formBuilder.group(details));
-        //const employeeFormArray = this.formBuilder.array(employeeFormGroups);
-        //this.demoForm.setControl('profileDetails', employeeFormArray);
-        //this.demoForm.get('profileDetails').patchValue(v.profileData);
-        this.singleData = v.profileData[0];
-        //console.log(this.demoForm.getRawValue());
+        v.profileData.map(mydata => {
+          const employeeFormGroups = v.profileData.map(details => this.formBuilder.group(details));
+          const employeeFormArray = this.formBuilder.array(employeeFormGroups);
+          this.demoForm.setControl('profileData', employeeFormArray);
+          this.demoForm.get('profileData').patchValue(v.profileData);
+          this.MultipleData = v.profileData;
+          this.singleData = v.profileData[0];
         });
-      
+
+      });
+
       return 'doc exists';
     } else {
       return 'created new doc';
     }
   }
 
-  GoogleLogin(){
-    this.showspinner= true;
+  GoogleLogin() {
+    this.showspinner = true;
 
-    this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(successLogin =>{
-      //console.log(successLogin.user);
+    this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(successLogin => {
       this.findOrCreate(successLogin.user.uid).then(result => {
 
-        if( result != null) {
+        if (result != null) {
           if (result === 'created new doc') { //new
-           // this.ref.markForCheck();
+            // this.ref.markForCheck();
             this.showspinner = false;
             this.showlogin = false;
             this.shownewUser = true;
@@ -96,7 +97,7 @@ export class LoaduserDataComponent implements OnInit {
             this.showspinner = false;
             this.showlogin = false;
             this.showoldUser = true;
-            
+
 
             //this.ref.detectChanges();
           }
@@ -110,14 +111,28 @@ export class LoaduserDataComponent implements OnInit {
       //this.ref.detectChanges();
     });
   }
-  GoogleLogout(){
+  GoogleLogout() {
     this.afAuth.auth.signOut();
   }
-  OldUserContinue(){
-            
-            this.dialog.open(DialogUserLogin, {
-              width: '250px', data: this.singleData
-            });  
+  OldUserContinue() {
+    const dialogRef = this.dialog.open(DialogUserLogin, {
+      width: '250px', data: this.singleData
+    });
+    dialogRef.afterClosed().subscribe(result  => {
+      console.log('The dialog was closed');
+
+      this.singleData = result;
+      this.MultipleData[0] = result;
+      const profileFormGroups = this.MultipleData.map(details => this.formBuilder.group(details));
+      const profileFormArray = this.formBuilder.array(profileFormGroups);
+      this.demoForm.setControl('profileData', profileFormArray);
+      this.demoForm.get('profileData').patchValue(this.MultipleData);
+      console.log('Saved Values:',this.demoForm.value);
+      this.itemDoc.update(this.demoForm.value);
+    });
+  }
+  get userdataDetailsArray(): FormArray {
+    return this.demoForm.get('profileData') as FormArray;
   }
 
 }
@@ -127,7 +142,7 @@ export class LoaduserDataComponent implements OnInit {
   selector: 'dialog-user-login-dialog',
   template: `
   
-  <form [formGroup]="demoForm"  (ngSubmit)="onSubmitFormData()">
+  <form [formGroup]="mydemoForm" >
   <mat-form-field>
   <mat-label>Modify Display Name</mat-label>
   <input matInput formControlName = "displayName" style = "background-color:cornflowerblue;" >
@@ -144,34 +159,31 @@ export class LoaduserDataComponent implements OnInit {
   <mat-label>Modify PhotoURL</mat-label>
   <input matInput formControlName = "photoURL" style = "background-color:cornflowerblue;" >
   </mat-form-field>
-  <button mat-raised-button type="submit"> Save </button>
-  <button mat-raised-button (click) = "onNoClick()" cdkFocusInitial> Clear </button>
+  <div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" cdkFocusInitial>Clear</button>
+  <button mat-button [mat-dialog-close]="mydemoForm.value">Save</button>
+  </div>
   </form>
 
   `
 })
 export class DialogUserLogin {
-  demoForm: FormGroup;
+  mydemoForm: FormGroup;
   constructor(
     public dialogRef: MatDialogRef<DialogUserLogin>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData, 
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
     public formBuilder: FormBuilder) {
 
-      this.demoForm = this.formBuilder.group ({
-        displayName : this.formBuilder.control(this.data.displayName),
-        email : this.formBuilder.control(this.data.email), 
-        phoneNumber : this.formBuilder.control(this.data.phoneNumber),
-        photoURL : this.formBuilder.control(this.data.photoURL)
-      });
+    this.mydemoForm = this.formBuilder.group({
+      displayName: this.formBuilder.control(this.data.displayName),
+      email: this.formBuilder.control(this.data.email),
+      phoneNumber: this.formBuilder.control(this.data.phoneNumber),
+      photoURL: this.formBuilder.control(this.data.photoURL)
+    });
 
-    }
-
-  onNoClick(): void {
-    this.dialogRef.close();
   }
-
-  onSubmitFormData(){
-
+  onNoClick(): void {
+    this.mydemoForm.reset();
   }
 
 }

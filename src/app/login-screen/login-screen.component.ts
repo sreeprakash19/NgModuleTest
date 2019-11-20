@@ -19,10 +19,11 @@ export class LoginScreenComponent implements OnInit {
   retrySpinnerRef: any;
   showretry = false;
   constructor(public svc: UserService, private bottomSheet: MatBottomSheet, 
-              private ref: ChangeDetectorRef ) {
+              private ref: ChangeDetectorRef, public afAuth: AngularFireAuth ) {
               }
 
   ngOnInit() {    
+    this.GoogleLogout();
     if (this.svc.hellotext === '') {
       this.svc.footerdisplay = `
       `;
@@ -42,6 +43,9 @@ export class LoginScreenComponent implements OnInit {
       console.log('Bottom sheet has been dismissed.');
     });
     //this.svc.onLoginGoogle();
+  }
+  GoogleLogout(){
+    this.afAuth.auth.signOut();
   }
 }
 

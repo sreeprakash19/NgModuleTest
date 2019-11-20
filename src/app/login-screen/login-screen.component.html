@@ -1,8 +1,17 @@
 <div *ngIf="svc.hellotext === ''" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
     <pre>
+        Objective:
+        1. loginscreen-start/login : Create Login Page and have two possibilities - New User and Old User
+        New User -> Open a Bottom sheet to display the mat-spinner and then open the dialog to show the new user Details
+        Old User -> Open a Bottom sheet to display the mat-spinner and then open the dialog to show the new user Details
+        Learnings -> You can open a dialog from the bottom sheet and not another bottomsheet or snackbar
+
+        2. loginscreen-start/'': Go to the Firebase console and create a new userprofile details and load the details into the dialog box and update the same using the Formbuilder
+
+        3.
     </pre>
 </div>
-<div *ngIf="svc.hellotext === 'loginscreen-start/login'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+<div *ngIf="svc.hellotext === 'loginscreen-start'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
     <div>
         Show Authentication tests- Auth Pass - New User
     </div>

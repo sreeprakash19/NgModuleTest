@@ -3,8 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { LoginScreenComponent } from './login-screen.component';
 import { LoaduserDataComponent } from './components/loaduser-data/loaduser-data.component';
-const routes: Routes = [{ path: '', component: LoaduserDataComponent },
-{ path: 'login', component: LoginScreenComponent }
+const routes: Routes = [{ path: '', component: LoginScreenComponent },
+{ path: 'login', component: LoaduserDataComponent }
 ];
 
 @NgModule({

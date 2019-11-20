@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+//import { CommonModule } from '@angular/common';
 
 import { LoginScreenRoutingModule } from './login-screen-routing.module';
 import { LoginScreenComponent, LoginButtonComponent, 
@@ -22,7 +22,7 @@ import { LoaduserDataComponent, DialogUserLogin } from './components/loaduser-da
     LoaduserDataComponent, DialogUserLogin
    ],
   imports: [
-    CommonModule,
+    //CommonModule,
     LoginScreenRoutingModule,
 
     SharedModule,
