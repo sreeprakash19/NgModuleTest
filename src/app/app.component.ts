@@ -107,8 +107,11 @@ export class AppComponent {
       name: 'Login Screen',
       pokemon: [
         {value: 'loginscreen-start', viewValue: 'Bottomsheet'},
-        {value: 'loginscreen-start/login', viewValue: 'Login Screen'}
-        
+        {value: 'loginscreen-start/login', viewValue: 'Login Screen'},
+        {value: 'loginscreen-start/update', viewValue: 'User Updates'},
+        {value: 'loginscreen-start/traverse', viewValue: 'Family Traverse'},
+        {value: 'loginscreen-start/animeinitial/1', viewValue: 'Animation Start'},
+        {value: 'loginscreen-start/animlogin/1', viewValue: 'Login Screen'}
       ]
     },
     {

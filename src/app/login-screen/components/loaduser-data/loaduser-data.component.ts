@@ -91,12 +91,14 @@ export class LoaduserDataComponent implements OnInit {
             this.showspinner = false;
             this.showlogin = false;
             this.shownewUser = true;
+            this.showretry = false;
             //this.ref.detectChanges();
           } else {//old
             //this.ref.markForCheck();
             this.showspinner = false;
             this.showlogin = false;
             this.showoldUser = true;
+            this.showretry = false;
 
 
             //this.ref.detectChanges();
@@ -119,8 +121,6 @@ export class LoaduserDataComponent implements OnInit {
       width: '250px', data: this.singleData
     });
     dialogRef.afterClosed().subscribe(result  => {
-      console.log('The dialog was closed');
-
       this.singleData = result;
       this.MultipleData[0] = result;
       const profileFormGroups = this.MultipleData.map(details => this.formBuilder.group(details));
@@ -164,7 +164,6 @@ export class LoaduserDataComponent implements OnInit {
   <button mat-button [mat-dialog-close]="mydemoForm.value">Save</button>
   </div>
   </form>
-
   `
 })
 export class DialogUserLogin {

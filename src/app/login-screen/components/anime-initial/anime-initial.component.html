@@ -1,0 +1,10 @@
+<div *ngIf="svc.hellotext === 'loginscreen-start/animeinitial/1'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+    <div>
+        Run Route Animations inside the lazy loaded Module
+    </div>
+</div>
+
+<div class="router-container" [@routeAnimation]="prepRouteAnimation(outlet)">
+        <router-outlet #outlet="outlet"></router-outlet>
+</div>
+
