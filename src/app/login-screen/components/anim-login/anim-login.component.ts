@@ -62,6 +62,13 @@ export class AnimLoginComponent implements OnInit {
   prepRouteAnimation(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
+  captureStartEvent(event: AnimationEvent) {
+    console.log('start', event);
+  }
+
+  captureDoneEvent(event: AnimationEvent) {
+    console.log('End', event);
+  }
 }
 
 @Component({
@@ -111,8 +118,9 @@ export class AnimLoginComponent implements OnInit {
   ]
 })
 
-@HostBinding('@pageAnimations')
+
 export class Lazy2Component implements OnInit, OnDestroy{
+  @HostBinding('@pageAnimations')
   showspinner = false;
   retryoption = '';
   shownewUser = false;

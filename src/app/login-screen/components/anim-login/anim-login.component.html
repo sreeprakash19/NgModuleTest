@@ -1,3 +1,5 @@
-<div class="router-container" [@routeAnimation]="prepRouteAnimation(outlet)">
+<div class="router-container" [@routeAnimation]="prepRouteAnimation(outlet)"    
+(@routeAnimation.start)="captureStartEvent($event)"
+(@routeAnimation.done)="captureDoneEvent($event)">
         <router-outlet #outlet="outlet"></router-outlet>
 </div>
