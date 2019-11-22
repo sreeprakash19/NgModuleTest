@@ -12,7 +12,12 @@ export class FamilyTraverseComponent implements OnInit {
 
   ngOnInit() {
   }
+  fatherforward(){
 
+  }
+  motherforward(){
+    
+  }
 }
 
 //https://stackoverflow.com/questions/51292378/how-do-you-insert-a-reference-value-into-firestore

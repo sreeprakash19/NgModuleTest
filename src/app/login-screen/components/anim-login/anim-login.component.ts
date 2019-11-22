@@ -72,6 +72,7 @@ export class AnimLoginComponent implements OnInit {
 }
 
 @Component({
+
   selector: 'app-lazy',
   template: `
   <div fxLayout="row" fxLayoutAlign="center center" class="logincomp">
@@ -95,7 +96,11 @@ export class AnimLoginComponent implements OnInit {
 </div>
   `,
   styleUrls: ['./anim-login.component.css'],
-
+  host: {
+    '[@pageAnimations]': 'someExpression',
+    '(@pageAnimations.start)': 'captureStartEvent($event)',
+    '(@pageAnimations.done)': 'captureDoneEvent($event)',
+  },
   animations: [
     trigger('pageAnimations', [
       transition(':enter', [
@@ -120,7 +125,8 @@ export class AnimLoginComponent implements OnInit {
 
 
 export class Lazy2Component implements OnInit, OnDestroy{
-  @HostBinding('@pageAnimations')
+  //@HostBinding('@pageAnimations')
+  someExpression= true;
   showspinner = false;
   retryoption = '';
   shownewUser = false;
@@ -136,7 +142,13 @@ export class Lazy2Component implements OnInit, OnDestroy{
 
   ngOnInit() {
   }
+  captureStartEvent(event: AnimationEvent) {
+    console.log('start', event);
+  }
 
+  captureDoneEvent(event: AnimationEvent) {
+    console.log('End', event);
+  }
   clickLogin() {
     this.showspinner = true;
     this.showretry = false;

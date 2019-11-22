@@ -134,7 +134,9 @@ export class LoaduserDataComponent implements OnInit {
   get userdataDetailsArray(): FormArray {
     return this.demoForm.get('profileData') as FormArray;
   }
-
+  NewUserContinue(){
+    
+  }
 }
 
 
