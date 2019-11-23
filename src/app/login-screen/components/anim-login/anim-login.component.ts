@@ -9,6 +9,7 @@ import { first } from 'rxjs/operators';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
+
 export interface DialogData {
   displayName: string;
   email: string;

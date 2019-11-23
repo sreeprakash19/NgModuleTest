@@ -11,6 +11,7 @@ import {
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 
 export interface DialogData {
   displayName: string;
@@ -80,7 +81,7 @@ export class LoaduserDataComponent implements OnInit {
     {value: 'Other', viewValue: 'other'}
   ];
   constructor(public svc: UserService, public afAuth: AngularFireAuth, private afs: AngularFirestore,
-    public dialog: MatDialog, public formBuilder: FormBuilder) {
+    public dialog: MatDialog, public formBuilder: FormBuilder, private ref: ChangeDetectorRef) {
 
     this.GoogleLogout();
   }
@@ -110,7 +111,8 @@ export class LoaduserDataComponent implements OnInit {
           this.demoForm.setControl('profileData', employeeFormArray);
           this.demoForm.get('profileData').patchValue(v.profileData);
           this.MultipleData = v.profileData;
-          this.singleData = v.profileData[0];
+          this.singleData = { ...v.profileData[0] };
+          console.log('read from DB', this.singleData );
         });
 
       });
@@ -128,19 +130,21 @@ export class LoaduserDataComponent implements OnInit {
     this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(successLogin => {
       this.findOrCreate(successLogin.user.uid).then(result => {
         if( result === 'Retry Login' ){
+          this.ref.markForCheck();
           this.showspinner = false;
           this.showlogin = false;
           this.showretry = true;
+          this.ref.detectChanges();
         }
         if (result != null) {
           if (result === 'created new doc') { //new
-            // this.ref.markForCheck();
+            this.ref.markForCheck();
 
             this.showspinner = false;
             this.showlogin = false;
             this.shownewUser = true;
             this.showretry = false;
-
+            this.ref.detectChanges();
             this.InitialValue = {
               displayName: successLogin.user.displayName,
               photoURL: successLogin.user.photoURL,
@@ -163,43 +167,42 @@ export class LoaduserDataComponent implements OnInit {
               Gender: ['Other', Validators.required]
             });
 
-            //this.ref.detectChanges();
+            
           } else {//old
-            //this.ref.markForCheck();
+            this.ref.markForCheck();
             this.showspinner = false;
             this.showlogin = false;
             this.showoldUser = true;
             this.showretry = false;
-            this.InitialValue = {
-              displayName: successLogin.user.displayName,
-              photoURL: successLogin.user.photoURL,
-              phoneNumber: this.singleData.phoneNumber,
-              Gender: this.singleData.Gender,
-              Uid: successLogin.user.uid,
-              AnniversaryDate: this.singleData.AnniversaryDate,
-              BirthDate: this.singleData.BirthDate,
-              customdisplayName: this.singleData.customdisplayName,
-              customphotoURL: this.singleData.customphotoURL,
-              GiftsBank: this.singleData.GiftsBank
-            };
-            this.svc.sendData(this.InitialValue);
-
-            //this.ref.detectChanges();
+            this.ref.detectChanges();
+            this.InitialValue.displayName = successLogin.user.displayName;
+            this.InitialValue.photoURL = successLogin.user.photoURL;
+            this.InitialValue.phoneNumber = successLogin.user.phoneNumber;
+            this.InitialValue.Uid = successLogin.user.uid;
           }
         }
       });
     }).catch(error => {
-      //this.ref.markForCheck();
+      this.ref.markForCheck();
       this.showspinner = false;
       this.showlogin = false;
       this.showretry = true;
-      //this.ref.detectChanges();
+      this.ref.detectChanges();
     });
   }
   GoogleLogout() {
     this.afAuth.auth.signOut();
   }
   OldUserContinue() {
+    this.InitialValue.Gender = this.singleData.Gender;
+    this.InitialValue.AnniversaryDate = this.singleData.AnniversaryDate;
+    this.InitialValue.BirthDate = this.singleData.BirthDate;
+    this.InitialValue.customdisplayName = this.singleData.customdisplayName;
+    this.InitialValue.customphotoURL = this.singleData.customphotoURL;
+    this.InitialValue.GiftsBank = this.singleData.GiftsBank;
+    this.svc.sendData(this.InitialValue);
+    console.log('old', this.InitialValue);
+
     const dialogRef = this.dialog.open(DialogUserLogin, {
       width: '250px', data: this.singleData
     });
@@ -231,6 +234,7 @@ export class LoaduserDataComponent implements OnInit {
     this.demoForm.setControl('profileData', profileFormArray);
     this.demoForm.get('profileData').patchValue(this.MultipleData);
     this.itemDoc.set(this.demoForm.value);
+    console.log('new', this.InitialValue);
   }
 }
 
