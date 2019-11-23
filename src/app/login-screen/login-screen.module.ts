@@ -14,6 +14,8 @@ import { LoginUserUpdateComponent } from './components/login-user-update/login-u
 import { FamilyTraverseComponent } from './components/family-traverse/family-traverse.component';
 import { AnimeInitialComponent, Lazy1Component } from './components/anime-initial/anime-initial.component';
 import { AnimLoginComponent, Lazy2Component, Lazy3Component } from './components/anim-login/anim-login.component';
+import { NewuserTraverseComponent } from './components/newuser-traverse/newuser-traverse.component';
+import { ReturnuserTraverseComponent } from './components/returnuser-traverse/returnuser-traverse.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,7 @@ import { AnimLoginComponent, Lazy2Component, Lazy3Component } from './components
     OldUserComponent, 
     NewUserComponent, 
     LoaduserDataComponent, DialogUserLogin, LoginUserUpdateComponent, FamilyTraverseComponent, 
-    AnimeInitialComponent, Lazy1Component, AnimLoginComponent, Lazy2Component, Lazy3Component
+    AnimeInitialComponent, Lazy1Component, AnimLoginComponent, Lazy2Component, Lazy3Component, NewuserTraverseComponent, ReturnuserTraverseComponent
    ],
   imports: [
     //CommonModule,

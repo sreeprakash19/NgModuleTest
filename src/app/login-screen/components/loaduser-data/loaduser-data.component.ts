@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { UserService } from '../../../user.service';
+import { UserService, UserInfoLogin } from '../../../user.service';
 import { auth } from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -14,12 +14,21 @@ import { Observable } from 'rxjs';
 
 export interface DialogData {
   displayName: string;
-  email: string;
-  phoneNumber: string;
   photoURL: string;
+  phoneNumber: string;
+  Gender: string;
+  AnniversaryDate: string;
+  BirthDate: string;
+  customdisplayName: string;
+  customphotoURL: string;
+  GiftsBank: number;
 }
 export interface MyUserData {
   profileData: Array<DialogData>;
+}
+export interface Gender {
+  value: string;
+  viewValue: string;
 }
 
 @Component({
@@ -40,10 +49,39 @@ export class LoaduserDataComponent implements OnInit {
   private itemDoc: AngularFirestoreDocument<MyUserData>;
   somedata: Observable<MyUserData>;
   savedData: MyUserData;
-  singleData: DialogData;
-  MultipleData :  Array<DialogData>;
+  singleData: DialogData = {
+    displayName: '',
+    photoURL: '',
+    phoneNumber: '',
+    Gender: '',
+    AnniversaryDate: '',
+    BirthDate: '',
+    customdisplayName: '',
+    customphotoURL: '',
+    GiftsBank: 0
+  };
+  MultipleData : Array<DialogData> = [];
+  InitialValue : UserInfoLogin = {
+    displayName: '',
+    photoURL: '',
+    phoneNumber: '',
+    Gender: '',
+    Uid: '',
+    AnniversaryDate: '',
+    BirthDate: '',
+    customdisplayName: '',
+    customphotoURL: '',
+    GiftsBank: 0
+  };
+  basicDetails: FormGroup;
+  gender: Gender[] = [
+    {value: 'Male', viewValue: 'male'},
+    {value: 'Female', viewValue: 'female'},
+    {value: 'Other', viewValue: 'other'}
+  ];
   constructor(public svc: UserService, public afAuth: AngularFireAuth, private afs: AngularFirestore,
     public dialog: MatDialog, public formBuilder: FormBuilder) {
+
     this.GoogleLogout();
   }
 
@@ -51,14 +89,18 @@ export class LoaduserDataComponent implements OnInit {
   }
 
   docExists(uid: string) {
-    return this.afs.doc(`testcollection/${uid}`).valueChanges().pipe(first()).toPromise();
+    return this.afs.doc(`testcollections/${uid}`).valueChanges().pipe(first()).toPromise().catch(error => {
+      return 'Retry Login';
+    });
   }
   async findOrCreate(uid: string) {
 
     const doc = await this.docExists(uid);
-
+    if( doc === 'Retry Login' ){
+      return 'Retry Login';
+    }
+    this.itemDoc = this.afs.doc<MyUserData>(`testcollections/${uid}`);
     if (doc) {
-      this.itemDoc = this.afs.doc<MyUserData>(`testcollection/${uid}`);
       this.somedata = this.itemDoc.valueChanges();
 
       this.somedata.subscribe(v => {
@@ -72,9 +114,10 @@ export class LoaduserDataComponent implements OnInit {
         });
 
       });
-
       return 'doc exists';
     } else {
+
+      this.MultipleData.push(this.singleData);
       return 'created new doc';
     }
   }
@@ -84,14 +127,42 @@ export class LoaduserDataComponent implements OnInit {
 
     this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(successLogin => {
       this.findOrCreate(successLogin.user.uid).then(result => {
-
+        if( result === 'Retry Login' ){
+          this.showspinner = false;
+          this.showlogin = false;
+          this.showretry = true;
+        }
         if (result != null) {
           if (result === 'created new doc') { //new
             // this.ref.markForCheck();
+
             this.showspinner = false;
             this.showlogin = false;
             this.shownewUser = true;
             this.showretry = false;
+
+            this.InitialValue = {
+              displayName: successLogin.user.displayName,
+              photoURL: successLogin.user.photoURL,
+              phoneNumber: successLogin.user.phoneNumber,
+              Gender: '',
+              Uid: successLogin.user.uid,
+              AnniversaryDate: '',
+              BirthDate: '',
+              customdisplayName: '',
+              customphotoURL: '',
+              GiftsBank: 0
+            };
+            this.singleData.displayName = successLogin.user.displayName;
+            this.singleData.photoURL =  successLogin.user.photoURL;
+            this.singleData.phoneNumber = successLogin.user.phoneNumber;
+            this.singleData.GiftsBank = 0 ;
+
+            this.basicDetails = this.formBuilder.group({
+              PhoneNumber: [successLogin.user.phoneNumber, Validators.required],
+              Gender: ['Other', Validators.required]
+            });
+
             //this.ref.detectChanges();
           } else {//old
             //this.ref.markForCheck();
@@ -99,7 +170,19 @@ export class LoaduserDataComponent implements OnInit {
             this.showlogin = false;
             this.showoldUser = true;
             this.showretry = false;
-
+            this.InitialValue = {
+              displayName: successLogin.user.displayName,
+              photoURL: successLogin.user.photoURL,
+              phoneNumber: this.singleData.phoneNumber,
+              Gender: this.singleData.Gender,
+              Uid: successLogin.user.uid,
+              AnniversaryDate: this.singleData.AnniversaryDate,
+              BirthDate: this.singleData.BirthDate,
+              customdisplayName: this.singleData.customdisplayName,
+              customphotoURL: this.singleData.customphotoURL,
+              GiftsBank: this.singleData.GiftsBank
+            };
+            this.svc.sendData(this.InitialValue);
 
             //this.ref.detectChanges();
           }
@@ -121,6 +204,7 @@ export class LoaduserDataComponent implements OnInit {
       width: '250px', data: this.singleData
     });
     dialogRef.afterClosed().subscribe(result  => {
+      if(result != null){
       this.singleData = result;
       this.MultipleData[0] = result;
       const profileFormGroups = this.MultipleData.map(details => this.formBuilder.group(details));
@@ -129,13 +213,24 @@ export class LoaduserDataComponent implements OnInit {
       this.demoForm.get('profileData').patchValue(this.MultipleData);
       console.log('Saved Values:',this.demoForm.value);
       this.itemDoc.update(this.demoForm.value);
+      }
     });
   }
   get userdataDetailsArray(): FormArray {
     return this.demoForm.get('profileData') as FormArray;
   }
   NewUserContinue(){
-    
+    this.InitialValue.phoneNumber = this.basicDetails.get('PhoneNumber').value;
+    this.InitialValue.Gender = this.basicDetails.get('Gender').value;
+    this.svc.sendData(this.InitialValue);
+    this.singleData.phoneNumber = this.InitialValue.phoneNumber;
+    this.singleData.Gender = this.InitialValue.Gender;
+    this.MultipleData[0] = this.singleData;
+    const profileFormGroups = this.MultipleData.map(details => this.formBuilder.group(details));
+    const profileFormArray = this.formBuilder.array(profileFormGroups);
+    this.demoForm.setControl('profileData', profileFormArray);
+    this.demoForm.get('profileData').patchValue(this.MultipleData);
+    this.itemDoc.set(this.demoForm.value);
   }
 }
 
@@ -150,17 +245,37 @@ export class LoaduserDataComponent implements OnInit {
   <input matInput formControlName = "displayName" style = "background-color:cornflowerblue;" >
   </mat-form-field>
   <mat-form-field>
-  <mat-label>Modify Email</mat-label>
-  <input matInput formControlName = "email" style = "background-color:cornflowerblue;" >
+  <mat-label>Modify PhotoURL</mat-label>
+  <input matInput formControlName = "photoURL" style = "background-color:cornflowerblue;" >
   </mat-form-field>
   <mat-form-field>
   <mat-label>Modify Ph Number</mat-label>
   <input matInput  formControlName = "phoneNumber" style = "background-color:cornflowerblue;" >
   </mat-form-field>
   <mat-form-field>
-  <mat-label>Modify PhotoURL</mat-label>
-  <input matInput formControlName = "photoURL" style = "background-color:cornflowerblue;" >
+  <mat-label>Modify Gender</mat-label>
+  <input matInput formControlName = "Gender" style = "background-color:cornflowerblue;" >
   </mat-form-field>
+  <!--<mat-form-field>
+  <mat-label>Anniversary Date</mat-label>
+  <input matInput formControlName = "AnniversaryDate" style = "background-color:cornflowerblue;" >
+  </mat-form-field>
+  <mat-form-field>
+  <mat-label>BirthDate</mat-label>
+  <input matInput formControlName = "BirthDate" style = "background-color:cornflowerblue;" >
+  </mat-form-field>
+  <mat-form-field>
+  <mat-label>customdisplayName</mat-label>
+  <input matInput formControlName = "customdisplayName" style = "background-color:cornflowerblue;" >
+  </mat-form-field>
+  <mat-form-field>
+  <mat-label>customphotoURL</mat-label>
+  <input matInput formControlName = "customphotoURL" style = "background-color:cornflowerblue;" >
+  </mat-form-field>
+  <mat-form-field>
+  <mat-label>GiftsBank</mat-label>
+  <input matInput formControlName = "GiftsBank" style = "background-color:cornflowerblue;" >
+  </mat-form-field>-->
   <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()" cdkFocusInitial>Clear</button>
   <button mat-button [mat-dialog-close]="mydemoForm.value">Save</button>
@@ -177,14 +292,18 @@ export class DialogUserLogin {
 
     this.mydemoForm = this.formBuilder.group({
       displayName: this.formBuilder.control(this.data.displayName),
-      email: this.formBuilder.control(this.data.email),
       phoneNumber: this.formBuilder.control(this.data.phoneNumber),
-      photoURL: this.formBuilder.control(this.data.photoURL)
+      photoURL: this.formBuilder.control(this.data.photoURL),
+      Gender: this.formBuilder.control(this.data.Gender),
+      AnniversaryDate: this.formBuilder.control(this.data.AnniversaryDate),
+      BirthDate: this.formBuilder.control(this.data.BirthDate),
+      customdisplayName: this.formBuilder.control(this.data.customdisplayName),
+      customphotoURL: this.formBuilder.control(this.data.customphotoURL),
+      GiftsBank: this.formBuilder.control(this.data.GiftsBank)
     });
 
   }
   onNoClick(): void {
     this.mydemoForm.reset();
   }
-
 }

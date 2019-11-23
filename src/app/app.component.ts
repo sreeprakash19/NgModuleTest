@@ -111,8 +111,10 @@ export class AppComponent {
         {value: 'loginscreen-start/update', viewValue: 'User Updates'},
         {value: 'loginscreen-start/traverse', viewValue: 'Family Traverse'},
         {value: 'loginscreen-start/animeinitial/1', viewValue: 'Animation Start'},
-        {value: 'loginscreen-start/animlogin/1', viewValue: 'Login Screen'}
-      ]
+        {value: 'loginscreen-start/animlogin/1', viewValue: 'Login Screen'},
+        {value: 'loginscreen-start/newUserstart', viewValue: 'New User'},
+        {value: 'loginscreen-start/returnUserstart', viewValue: 'Return User'}
+      ] 
     },
     {
       name: 'Route Animation',

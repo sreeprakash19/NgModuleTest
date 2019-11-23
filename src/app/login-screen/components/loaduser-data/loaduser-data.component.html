@@ -1,6 +1,6 @@
 <div *ngIf="svc.hellotext === ''" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
     <pre>
-        Testcase for loading old user data
+        Loaduser Data component
     </pre>
 </div>
 <div *ngIf="svc.hellotext === 'loginscreen-start/login'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
@@ -20,9 +20,27 @@ style="height: auto; margin: 10%; padding:10%; overflow: hidden;">
     <button mat-raised-button *ngIf="showlogin" color="primary" (click)="GoogleLogin()">
         Google login
     </button>
-    <button mat-raised-button *ngIf="shownewUser" color="primary" (click)="NewUserContinue()">
-        New User
-    </button>
+    <div *ngIf="shownewUser" >
+        <form [formGroup] ="basicDetails" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+        <mat-form-field>
+            <mat-label>Update Phone Number</mat-label>
+            <input matInput formControlName = "PhoneNumber" style = "background-color:blueviolet;" >
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Update Gender</mat-label>
+            <mat-select formControlName ="Gender" placeholder="Select Gender">
+                <mat-option *ngFor="let mygender of gender"  [value]="mygender.value" >
+                {{mygender.viewValue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" [disabled]="!basicDetails.valid" (click)="NewUserContinue()">
+            New User
+        </button>
+        </form>
+        
+    </div>
+
     <button mat-raised-button *ngIf="showoldUser" color="primary" (click)="OldUserContinue()">
         Old login
     </button>
@@ -31,5 +49,6 @@ style="height: auto; margin: 10%; padding:10%; overflow: hidden;">
     </button>
 
 </div>
+
 
 </div>

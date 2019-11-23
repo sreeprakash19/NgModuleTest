@@ -13,7 +13,7 @@ export interface DialogData {
   displayName: string;
   email: string;
   phoneNumber: string;
-  photoURL: string;
+  photoURL: string; //also UID, Gender, remove email
 }
 export interface MyUserData {
   profileData: Array<DialogData>;

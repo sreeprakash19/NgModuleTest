@@ -19,8 +19,25 @@ import {
   ValidationErrors
 } from '@angular/forms';
 import { catchError } from 'rxjs/operators';
-
 import { delay } from 'rxjs/operators';
+
+export interface UserLogin {
+  displayName: string;
+  photoURL: string;
+  phoneNumber: string;
+  Gender: string;
+  Uid: string;
+}
+export interface UserInfoLogin extends UserLogin {
+  AnniversaryDate: string;
+  BirthDate: string;
+  customdisplayName: string;
+  customphotoURL: string;
+  GiftsBank: number;
+}
+
+
+//----------------- just saving to the next screen is the task
 const ALTER_EGOS = ['Eric'];
 
 export class CollegeDept {
@@ -110,6 +127,25 @@ export const ALL_TEAMS: Team[] = [
   providedIn: 'root',
 })
 export class UserService {
+  InitialValue : UserInfoLogin = {
+    displayName: '',
+    photoURL: '',
+    phoneNumber: '',
+    Gender: '',
+    Uid: '',
+    AnniversaryDate: '',
+    BirthDate: '',
+    customdisplayName: '',
+    customphotoURL: '',
+    GiftsBank: 0
+  };
+  public myInitialValue: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.InitialValue);
+  currentMessageData = this.myInitialValue.asObservable();
+
+  AfterLoginUpdate(saveData : UserInfoLogin){
+    this.myInitialValue.next(saveData);
+  }
+  //-------------------
   public counter = 0;
   hellotext = '';
   hello = 0;
