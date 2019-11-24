@@ -46,7 +46,7 @@ export class LoaduserDataComponent implements OnInit {
   showlogin = true;
   shownewUser = false;
   showoldUser = false;
-  showretry = false;
+  buttontext = 'Google Login';
   private itemDoc: AngularFirestoreDocument<MyUserData>;
   somedata: Observable<MyUserData>;
   savedData: MyUserData;
@@ -82,8 +82,11 @@ export class LoaduserDataComponent implements OnInit {
   ];
   constructor(public svc: UserService, public afAuth: AngularFireAuth, private afs: AngularFirestore,
     public dialog: MatDialog, public formBuilder: FormBuilder, private ref: ChangeDetectorRef) {
-
-    this.GoogleLogout();
+      this.basicDetails = this.formBuilder.group({
+        PhoneNumber: ['', Validators.required],
+        Gender: ['Other', Validators.required]
+      });
+      this.GoogleLogout();
   }
 
   ngOnInit() {
@@ -126,25 +129,23 @@ export class LoaduserDataComponent implements OnInit {
 
   GoogleLogin() {
     this.showspinner = true;
-
+    this.showlogin = false;
     this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(successLogin => {
       this.findOrCreate(successLogin.user.uid).then(result => {
         if( result === 'Retry Login' ){
           this.ref.markForCheck();
           this.showspinner = false;
-          this.showlogin = false;
-          this.showretry = true;
+          this.showlogin = true;
+          this.buttontext = 'Retry Login';
           this.ref.detectChanges();
         }
         if (result != null) {
           if (result === 'created new doc') { //new
-            this.ref.markForCheck();
-
+            //this.ref.markForCheck();
             this.showspinner = false;
             this.showlogin = false;
             this.shownewUser = true;
-            this.showretry = false;
-            this.ref.detectChanges();
+            //this.ref.detectChanges();
             this.InitialValue = {
               displayName: successLogin.user.displayName,
               photoURL: successLogin.user.photoURL,
@@ -161,19 +162,13 @@ export class LoaduserDataComponent implements OnInit {
             this.singleData.photoURL =  successLogin.user.photoURL;
             this.singleData.phoneNumber = successLogin.user.phoneNumber;
             this.singleData.GiftsBank = 0 ;
-
-            this.basicDetails = this.formBuilder.group({
-              PhoneNumber: [successLogin.user.phoneNumber, Validators.required],
-              Gender: ['Other', Validators.required]
-            });
-
-            
+           
           } else {//old
             this.ref.markForCheck();
             this.showspinner = false;
+            this.shownewUser = false;
             this.showlogin = false;
             this.showoldUser = true;
-            this.showretry = false;
             this.ref.detectChanges();
             this.InitialValue.displayName = successLogin.user.displayName;
             this.InitialValue.photoURL = successLogin.user.photoURL;
@@ -183,10 +178,9 @@ export class LoaduserDataComponent implements OnInit {
         }
       });
     }).catch(error => {
-      this.ref.markForCheck();
       this.showspinner = false;
-      this.showlogin = false;
-      this.showretry = true;
+      this.showlogin = true;
+      this.buttontext = 'Retry Login';
       this.ref.detectChanges();
     });
   }
@@ -223,6 +217,7 @@ export class LoaduserDataComponent implements OnInit {
     return this.demoForm.get('profileData') as FormArray;
   }
   NewUserContinue(){
+
     this.InitialValue.phoneNumber = this.basicDetails.get('PhoneNumber').value;
     this.InitialValue.Gender = this.basicDetails.get('Gender').value;
     this.svc.sendData(this.InitialValue);

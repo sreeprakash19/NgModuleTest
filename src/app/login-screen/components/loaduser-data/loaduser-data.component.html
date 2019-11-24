@@ -1,27 +1,11 @@
-<div *ngIf="svc.hellotext === ''" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
-    <pre>
-        Loaduser Data component
-    </pre>
-</div>
-<div *ngIf="svc.hellotext === 'loginscreen-start/login'" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
-    <div>
-        Login pass-> old User -> Load data from DB
-    </div>
+<mat-spinner *ngIf="showspinner"></mat-spinner>
+<button mat-raised-button *ngIf="showlogin" color="primary" (click)="GoogleLogin()">
+        {{buttontext}}
+</button>
 
 
-
-<div *ngIf="showspinner" fxLayout="column" fxLayoutAlign="space-around center" 
-style="height: auto; margin: 10%; padding:10%; overflow: hidden;">
-<mat-spinner ></mat-spinner>
-</div>
-
-
-<div *ngIf="!showspinner" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
-    <button mat-raised-button *ngIf="showlogin" color="primary" (click)="GoogleLogin()">
-        Google login
-    </button>
-    <div *ngIf="shownewUser" >
-        <form [formGroup] ="basicDetails" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
+<form [formGroup] ="basicDetails" >
+    <div *ngIf="shownewUser" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%">
         <mat-form-field>
             <mat-label>Update Phone Number</mat-label>
             <input matInput formControlName = "PhoneNumber" style = "background-color:blueviolet;" >
@@ -37,18 +21,11 @@ style="height: auto; margin: 10%; padding:10%; overflow: hidden;">
         <button mat-raised-button color="primary" [disabled]="!basicDetails.valid" (click)="NewUserContinue()">
             New User
         </button>
-        </form>
-        
     </div>
-
-    <button mat-raised-button *ngIf="showoldUser" color="primary" (click)="OldUserContinue()">
-        Old login
-    </button>
-    <button mat-raised-button *ngIf="showretry" color="primary" (click)="GoogleLogin()">
-        Retry Login
-    </button>
-
-</div>
+</form>
 
 
-</div>
+<button mat-raised-button *ngIf="showoldUser" color="primary" (click)="OldUserContinue()">
+    Old login
+</button>
+
