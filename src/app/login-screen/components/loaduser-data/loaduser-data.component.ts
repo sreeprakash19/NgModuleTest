@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { UserService, UserInfoLogin } from '../../../user.service';
+import { UserService, UserInfoLogin, DialogData, MyUserData  } from '../../../user.service';
 import { auth } from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -13,20 +13,6 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { Observable } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 
-export interface DialogData {
-  displayName: string;
-  photoURL: string;
-  phoneNumber: string;
-  Gender: string;
-  AnniversaryDate: string;
-  BirthDate: string;
-  customdisplayName: string;
-  customphotoURL: string;
-  GiftsBank: number;
-}
-export interface MyUserData {
-  profileData: Array<DialogData>;
-}
 export interface Gender {
   value: string;
   viewValue: string;

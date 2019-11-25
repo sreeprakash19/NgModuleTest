@@ -21,6 +21,21 @@ import {
 import { catchError } from 'rxjs/operators';
 import { delay } from 'rxjs/operators';
 
+export interface DialogData {
+  displayName: string;
+  photoURL: string;
+  phoneNumber: string;
+  Gender: string;
+  AnniversaryDate: string;
+  BirthDate: string;
+  customdisplayName: string;
+  customphotoURL: string;
+  GiftsBank: number;
+}
+export interface MyUserData {
+  profileData: Array<DialogData>;
+}
+
 export interface UserLogin {
   displayName: string;
   photoURL: string;
@@ -139,11 +154,27 @@ export class UserService {
     customphotoURL: '',
     GiftsBank: 0
   };
+  InitialValueLogin : UserInfoLogin = {
+    displayName: 'Manoj Isaac',
+    photoURL: 'https://lh3.googleusercontent.com/a-/AAuE7mDcM-XfiG-OgprYqulFoAgKDCAvnWSDiiLqiiXx',
+    phoneNumber: '9978878789',
+    Gender: 'Male',
+    Uid: 'KjMfJfNSJzVuV7X5ds8Xu0KUCvG2',
+    AnniversaryDate: '',
+    BirthDate: '',
+    customdisplayName: 'update DisplayedName',
+    customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2F1574681111580_FbI60?alt=media&token=f97c8de9-480e-4431-ad0a-561e599a0d11',
+    GiftsBank: 0
+  };
+  
   public myInitialValue: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.InitialValue);
+  public myInitialValueLogin: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.InitialValueLogin);
+
   currentMessageData = this.myInitialValue.asObservable();
+  currentMessageDataLogin = this.myInitialValueLogin.asObservable();
 
   AfterLoginUpdate(saveData : UserInfoLogin){
-    this.myInitialValue.next(saveData);
+    this.myInitialValueLogin.next(saveData);
   }
   //-------------------
   public counter = 0;

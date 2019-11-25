@@ -3,23 +3,23 @@
       <mat-card  >
         <mat-card-header>
           <div mat-card-avatar  style= "background-image: url('/assets/man.png'); background-size: contain;"></div>
-          <mat-card-title>{{UserInfoLocal?.displayName}}'s Family</mat-card-title>
-          <mat-card-subtitle>{{UserInfoLocal?.City}} </mat-card-subtitle>
-          <mat-card-subtitle>{{UserInfoLocal?.phoneNumber}}</mat-card-subtitle>
+          <mat-card-title>{{myafterlogindata?.displayName}}'s Family</mat-card-title>
+          <mat-card-subtitle>{{myafterlogindata?.Gender}} </mat-card-subtitle>
+          <mat-card-subtitle>Ph:{{myafterlogindata?.phoneNumber}}</mat-card-subtitle>
         </mat-card-header>
         <mat-spinner *ngIf= "showspinner"></mat-spinner>
-        <img mat-card-image style= "max-height: 50vh" src={{profilepic}}  (load)="dosomething()" alt="Photo of a User">
-        <mat-card-content>
-          <p>
-            {{UserInfoLocal?.displayedTitle}}
-          </p>
+        <img mat-card-image style= "max-height: 50vh" src= "{{myafterlogindata?.customphotoURL}}"   (load)="dosomething()" alt="Photo of a User">
+      <mat-card-content>
+          <pre>
+            {{myafterlogindata?.customdisplayName}}
+          </pre>
         </mat-card-content>
         <mat-card-actions>
   
           <button mat-raised-button color="warn" fxFlexOffset="0px" fxFlex="auto" >Birthday   </button>
-          <mat-chip color="primary" fxFlexOffset="8px" fxFlex="auto">{{UserInfoLocal?.BirthDate}}</mat-chip>
+          <mat-chip color="primary" fxFlexOffset="8px" fxFlex="auto">{{myafterlogindata?.BirthDate}}</mat-chip>
           <button mat-raised-button color="warn" fxFlexOffset="8px" fxFlex="auto" >Anniversary</button>
-          <mat-chip color="primary" fxFlexOffset="0px" fxFlex="auto">{{UserInfoLocal?.AnniversaryDate}}</mat-chip>
+          <mat-chip color="primary" fxFlexOffset="0px" fxFlex="auto">{{myafterlogindata?.AnniversaryDate}}</mat-chip>
         </mat-card-actions>
       </mat-card>
     </div>
@@ -41,10 +41,10 @@
             Close Family
           </button>
           <button mat-raised-button color="primary"  (click)="openDialogGreeting()">
-              voice Greeting
+            Voice Greeting
           </button>
           <button mat-raised-button color="primary" (click)="NextPage()">
-              My Gifts 
+              My Saved Gifts 
           </button>
     </div>
     
