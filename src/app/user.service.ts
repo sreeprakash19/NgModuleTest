@@ -32,8 +32,24 @@ export interface DialogData {
   customphotoURL: string;
   GiftsBank: number;
 }
+export interface AfterVideoData {
+  displayName: string;
+  photoURL: string;
+  phoneNumber: string;
+  Gender: string;
+  AnniversaryDate: string;
+  BirthDate: string;
+  customdisplayName: string;
+  customphotoURL: string;
+  GiftsBank: number;
+  customaudioURL: string;
+}
+
 export interface MyUserData {
   profileData: Array<DialogData>;
+}
+export interface MyAfterVideoData {
+  profileData: Array<AfterVideoData>;
 }
 
 export interface UserLogin {
@@ -51,6 +67,9 @@ export interface UserInfoLogin extends UserLogin {
   GiftsBank: number;
 }
 
+export interface UserAudioLogin extends UserInfoLogin {
+  customaudioURL: string;
+}
 
 //----------------- just saving to the next screen is the task
 const ALTER_EGOS = ['Eric'];
@@ -163,18 +182,36 @@ export class UserService {
     AnniversaryDate: '',
     BirthDate: '',
     customdisplayName: 'update DisplayedName',
-    customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2F1574681111580_FbI60?alt=media&token=f97c8de9-480e-4431-ad0a-561e599a0d11',
+    customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2F1575031626761_tp2YQ?alt=media&token=06883cc9-7d2c-430f-91f8-e32cb89c9421',
     GiftsBank: 0
   };
   
+  AfterLoginVideo : UserAudioLogin = {
+    displayName: 'Manoj Isaac',
+    photoURL: 'https://lh3.googleusercontent.com/a-/AAuE7mDcM-XfiG-OgprYqulFoAgKDCAvnWSDiiLqiiXx',
+    phoneNumber: '9978878789',
+    Gender: 'Male',
+    Uid: 'KjMfJfNSJzVuV7X5ds8Xu0KUCvG2',
+    AnniversaryDate: '',
+    BirthDate: '',
+    customdisplayName: 'update DisplayedName',
+    customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2F1575031626761_tp2YQ?alt=media&token=06883cc9-7d2c-430f-91f8-e32cb89c9421',
+    GiftsBank: 0,
+    customaudioURL: ''
+  }
   public myInitialValue: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.InitialValue);
   public myInitialValueLogin: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.InitialValueLogin);
+  public myAfterVideoLogin: BehaviorSubject<UserAudioLogin> = new BehaviorSubject<UserAudioLogin>(this.AfterLoginVideo);
 
   currentMessageData = this.myInitialValue.asObservable();
   currentMessageDataLogin = this.myInitialValueLogin.asObservable();
-
+  currentAfterVideoLogin = this.myAfterVideoLogin.asObservable();
+  
   AfterLoginUpdate(saveData : UserInfoLogin){
     this.myInitialValueLogin.next(saveData);
+  }
+  AfterVideoideo(saveData : UserAudioLogin){
+    this.myAfterVideoLogin.next(saveData);
   }
   //-------------------
   public counter = 0;

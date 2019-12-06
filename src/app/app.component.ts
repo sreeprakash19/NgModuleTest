@@ -23,8 +23,17 @@ export interface PokemonGroup {
 })
 export class AppComponent {
   title = 'test';
-  pokemonControl = new FormControl('loginscreen-start');
+  pokemonControl = new FormControl('audio-final');
   pokemonGroups: PokemonGroup[] = [
+    {
+      name: 'Audio Testing',
+      pokemon: [
+        {value: 'audio-final', viewValue: 'Audio'}
+      ]
+    }
+    
+    
+    /*,
     {
       name: 'Login Screen',
       pokemon: [
@@ -97,12 +106,23 @@ export class AppComponent {
       pokemon: [
         {value: 'team-mgt-start', viewValue: 'Team Management start'}
       ]
-    }
+    }*/
 
   ];
   pokemonControltc = new FormControl({value: '', disabled: true});
   pokemonGroupstc: PokemonGroup[] = [
-    
+    {
+      name: 'Audio Testing',
+      pokemon: [
+        {value: 'audio-final/startnull', viewValue: 'First Login'},
+        {value: 'audio-final/startold', viewValue: 'Second Login'},
+        {value: 'audio-final/imagegallery', viewValue: 'Image Gallery'},
+        {value: 'audio-final/imagerecord', viewValue: 'Image Camera'},
+        {value: 'audio-final/audioclip', viewValue: 'Audio Clip'},
+        {value: 'audio-final', viewValue: 'Final Integration'},
+        {value: 'audio-final/start', viewValue: 'Audio Full'}
+      ]
+    },
     {
       name: 'Login Screen',
       pokemon: [

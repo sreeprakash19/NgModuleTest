@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full'},
+  /*
   { path: 'feature-start', loadChildren: () => import('./feature-start/feature-start.module').then(m => m.FeatureStartModule) },
   { path: 'feature-final', loadChildren: () => import('./feature-final/feature-final.module').then(m => m.FeatureFinalModule) },
   { path: 'install-login', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
@@ -15,7 +16,6 @@ const routes: Routes = [
   { path: 'login-DBNewUser', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-DBReadUser', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
   { path: 'login-Profilescr', loadChildren: () => import('./install-login/install-login.module').then(m => m.InstallLoginModule) },
-
   { path: 'envstart-menu', loadChildren: () => import('./env-setup/env-setup.module').then(m => m.EnvSetupModule) },
   { path: 'envstart-calc', loadChildren: () => import('./env-setup/env-setup.module').then(m => m.EnvSetupModule) },
   { path: 'fmafstart', loadChildren: () => import('./flex-mat-array-fb/flex-mat-array-fb.module').then(m => m.FlexMatArrayFBModule) },
@@ -59,7 +59,8 @@ const routes: Routes = [
   { path: 'login-screen', loadChildren: () => import('./main-page/main-page.module').then(m => m.MainPageModule) },
 
   { path: 'lazy', loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule) },
-  { path: 'loginscreen-start', loadChildren: () => import('./login-screen/login-screen.module').then(m => m.LoginScreenModule) }
+  { path: 'loginscreen-start', loadChildren: () => import('./login-screen/login-screen.module').then(m => m.LoginScreenModule) },*/
+  { path: 'audio-final', loadChildren: () => import('./audio-final/audio-final.module').then(m => m.AudioFinalModule) }
 ];
 //Learning - if the Primary module lazy loads then it is same as app module
 //Learning 101 -> appModule maintains the state. We can use the Main Module to change state for loading lazy modules 

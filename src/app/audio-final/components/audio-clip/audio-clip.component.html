@@ -1,0 +1,18 @@
+<mat-card fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10%" style = "background:gold; font-family: Lato;" >
+    <div mat-dialog-content >
+            <audio *ngFor="let audio of audioFiles" controls='true' [src]="audio">
+            </audio>
+    <section fxFlex="0 1 75%" *ngIf= "showRecbutton">
+            <button mat-fab color="primary"
+            (click)="initiateRecording()" [disabled]= "disableRecbutton" >
+            {{ recstate === 'recording' ? seconds : 'REC' }}</button> 
+          </section>
+    </div>
+  
+    <div mat-dialog-actions>
+    <button mat-raised-button color ="primary" (click)="onChange()" *ngIf= "showRecording" >Stop Recording </button>
+    <button mat-raised-button color ="primary" (click)="onDelete()" *ngIf= "showDeletebutton" >Delete</button>
+    <button mat-raised-button color ="primary" (click)="onSave()" *ngIf= "showSave" >Save Recording </button>
+    <button mat-raised-button  color="primary" (click)="goback()" cdkFocusInitial>Back</button>
+    </div>
+</mat-card> 
