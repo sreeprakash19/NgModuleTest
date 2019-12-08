@@ -1,7 +1,4 @@
 import { Component, OnInit, Inject, ViewRef } from '@angular/core';
-import { FamilydetailsService, UserInfoLogin, UserInfoLoginArray, FromDatabase } from '../../../familydetails.service';
-import { AngularFirestoreDocument, AngularFirestore } from '@angular/fire/firestore';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AngularFireStorage } from '@angular/fire/storage';

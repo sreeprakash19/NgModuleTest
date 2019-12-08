@@ -94,6 +94,10 @@ export class StartNullComponent implements OnInit {
   addfallback() {
     this.showImage = this.myafterlogindata.photoURL;
   }
+  NextPage(){
+
+  }
+
 }
 
 @Component({
@@ -123,6 +127,7 @@ export class StartNullComponent implements OnInit {
 })
 
 export class DialogAudioNullComponent {
+  seconds: number;
   state = 'Stop';
   AudioOption = 'Microphone';
   settingMsg = '';

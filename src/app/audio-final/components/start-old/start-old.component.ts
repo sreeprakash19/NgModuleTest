@@ -94,6 +94,9 @@ export class StartOldComponent implements OnInit {
   addfallback() {
     this.showImage = this.myafterlogindata.photoURL;
   }
+  NextPage(){
+
+  }
 }
 
 @Component({
@@ -125,6 +128,7 @@ export class StartOldComponent implements OnInit {
 })
 
 export class DialogAudioOldComponent {
+  seconds: number;
   showRecordOption= false;
   state = 'Stop';
   AudioOption = '';

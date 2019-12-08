@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full'},
+  
   /*
   { path: 'feature-start', loadChildren: () => import('./feature-start/feature-start.module').then(m => m.FeatureStartModule) },
   { path: 'feature-final', loadChildren: () => import('./feature-final/feature-final.module').then(m => m.FeatureFinalModule) },
@@ -60,7 +61,10 @@ const routes: Routes = [
 
   { path: 'lazy', loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule) },
   { path: 'loginscreen-start', loadChildren: () => import('./login-screen/login-screen.module').then(m => m.LoginScreenModule) },*/
-  { path: 'audio-final', loadChildren: () => import('./audio-final/audio-final.module').then(m => m.AudioFinalModule) }
+  { path: 'audio-final', loadChildren: () => import('./audio-final/audio-final.module').then(m => m.AudioFinalModule) },
+  { path: '**', redirectTo: '' , pathMatch: 'full'}
+
+  
 ];
 //Learning - if the Primary module lazy loads then it is same as app module
 //Learning 101 -> appModule maintains the state. We can use the Main Module to change state for loading lazy modules 
