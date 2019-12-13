@@ -225,7 +225,7 @@ export class DialogAudioNullComponent {
     });
   }
   errorCallback() {
-    alert('Uh-oh, the Microphone didn\'t start. Do you have a Microphone? Did you give it permission? Refresh to try again.');
+    alert('Uh-oh, the Microphone is Blocked. Remove Blocked status from Browser Settings.');
   }
   initiateRecording() {
     console.log('Goto Record TC')
