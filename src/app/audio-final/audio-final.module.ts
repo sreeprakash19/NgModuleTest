@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AudioFinalRoutingModule } from './audio-final-routing.module';
-import { AudioFinalComponent } from './audio-final.component';
+import { AudioFinalComponent, DialogAudioComponent } from './audio-final.component';
 import { AudioRecordComponent, DialogAfterAudio, DialogAfterOldAudio } from './components/audio-record/audio-record.component';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -17,7 +17,7 @@ import { AudioClipComponent } from './components/audio-clip/audio-clip.component
 
 @NgModule({
   declarations: [
-    AudioFinalComponent, 
+    AudioFinalComponent, DialogAudioComponent,
     AudioRecordComponent, 
     DialogAfterAudio, 
     DialogAfterOldAudio, 
@@ -36,6 +36,7 @@ import { AudioClipComponent } from './components/audio-clip/audio-clip.component
 
   ],
   entryComponents: [
+    DialogAudioComponent,
     DialogAfterAudio,
     DialogAfterOldAudio,
     DialogAudioNullComponent, DialogVideoNullComponent,

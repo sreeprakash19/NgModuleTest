@@ -18,7 +18,7 @@ export interface UserInfoLogin extends UserLogin {
 
 }
 export interface UserInfoLoginArray {
-  profileData: Array<UserInfoLogin>;
+  profileData: Array<FromDatabase>;
 }
 export interface FromDatabase {
   displayName: string;
@@ -31,7 +31,6 @@ export interface FromDatabase {
   customphotoURL: string;
   GiftsBank: number;
   downloadaudioURL: string;
-
 }
 @Injectable({
   providedIn: 'root'
@@ -50,7 +49,7 @@ export class FamilydetailsService {
     customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2Fhi.jpg?alt=media&token=7877d272-94c1-4f40-a673-afc81be73cf0',
     //customphotoURL: '',
     GiftsBank: 0,
-    downloadaudioURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/audio%2F1576143427631_asU1R?alt=media&token=b2e0829f-9309-40da-aad1-c71545eef9dc'
+    downloadaudioURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/audio%2F1576596614570_WYViI?alt=media&token=f85c0f1a-2c10-4b0e-9296-c5038fad736e'
     //downloadaudioURL: ''
   }
   public savedValue: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.AfterLoginData);
