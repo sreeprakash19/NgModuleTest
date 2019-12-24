@@ -250,6 +250,7 @@ export class DialogAfterAudio implements OnInit {
     }
     this.storage.upload(`audio/${new Date().getTime()}_${text}`, this.imageFile).then(uploadstat => {
       if (uploadstat != null) {
+        console.group(uploadstat.ref.fullPath);
         uploadstat.ref.getDownloadURL().then(downloadURL => {
           this.data.customaudioURL = downloadURL;
           console.log('downloadURL', downloadURL);

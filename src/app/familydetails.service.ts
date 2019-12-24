@@ -15,10 +15,19 @@ export interface UserInfoLogin extends UserLogin {
   customphotoURL: string;
   GiftsBank: number;
   downloadaudioURL: string;
-
 }
 export interface UserInfoLoginArray {
-  profileData: Array<FromDatabase>;
+  displayName: string;
+  photoURL: string;
+  phoneNumber: string;
+  Gender: string;
+  AnniversaryDate: string;
+  BirthDate: string;
+  customdisplayName: string;
+  customphotoURL: string;
+  GiftsBank: number;
+  downloadaudioURL: string;
+  //profileData: Array<FromDatabase>;
 }
 export interface FromDatabase {
   displayName: string;
@@ -49,8 +58,7 @@ export class FamilydetailsService {
     customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2Fhi.jpg?alt=media&token=7877d272-94c1-4f40-a673-afc81be73cf0',
     //customphotoURL: '',
     GiftsBank: 0,
-    downloadaudioURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/audio%2F1576596614570_WYViI?alt=media&token=f85c0f1a-2c10-4b0e-9296-c5038fad736e'
-    //downloadaudioURL: ''
+    downloadaudioURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/audio%2F1577170280089_wpW9S?alt=media&token=c04d3851-4e82-4cf4-a04d-febd2269b7cc'
   }
   public savedValue: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.AfterLoginData);
   currentMessageData = this.savedValue.asObservable();

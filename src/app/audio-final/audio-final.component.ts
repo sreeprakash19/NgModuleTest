@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
-import { FamilydetailsService, UserInfoLogin, FromDatabase, UserInfoLoginArray } from '../familydetails.service';
+import { FamilydetailsService, UserInfoLogin, UserInfoLoginArray } from '../familydetails.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
@@ -63,7 +63,7 @@ export class AudioFinalComponent implements OnInit {
   <h2 mat-dialog-title>
   <mat-label>{{settingMsg}}</mat-label>  
   </h2>
-  <mat-spinner *ngIf= "showspinner"></mat-spinner>
+  
   <div mat-dialog-content>
   
     <audio *ngFor="let audio of audioFiles" controls='true' [src]="audio" (error) = "connectionerror()">
@@ -74,7 +74,7 @@ export class AudioFinalComponent implements OnInit {
       {{ state === 'recording' ? seconds : 'REC' }}</button> 
     </section>
   </div>
-
+  <mat-spinner *ngIf= "showspinner"></mat-spinner>
   <div mat-dialog-actions>
   <button mat-raised-button color ="primary" (click)="onChange()" *ngIf="showbutton" [disabled]= "disablebutton" >{{AudioOption}} </button>
   <button mat-raised-button  color="primary" (click)="goback()" cdkFocusInitial>Back</button>
@@ -94,8 +94,7 @@ export class DialogAudioComponent {
   showspinner = false;
   AudioOption = 'Delete';
   seconds = 0;
-  savetoDB: FromDatabase;
-  MultipleData: Array<FromDatabase> = [];
+  savetoDB: UserInfoLoginArray;
   private itemDoc: AngularFirestoreDocument<UserInfoLoginArray>;
 
   intervalId = 0;
@@ -104,14 +103,15 @@ export class DialogAudioComponent {
   chunks = [];
   imageFile: any;
   private error;
+  storageRef: any;
 
   constructor(public dialogRef: MatDialogRef<DialogAudioComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: UserInfoLogin, private cd: ChangeDetectorRef,
-              private storage: AngularFireStorage, private afs: AngularFirestore, private dom: DomSanitizer ) {
+    @Inject(MAT_DIALOG_DATA) public data: UserInfoLogin, private cd: ChangeDetectorRef,
+    private storage: AngularFireStorage, private afs: AngularFirestore, private dom: DomSanitizer) {
     this.state = RecordingState.STOPPED;
     this.savetoDB = { ... this.data };
-    this.MultipleData[0] = this.savetoDB;
     this.itemDoc = this.afs.doc<UserInfoLoginArray>(`testcollections/${this.data.Uid}`);
+
     //this.itemDoc =this.afs.collection('testcollections').doc(`${this.data.Uid}`);
     if (data.downloadaudioURL != null) {
       this.settingMsg = 'Play your Voice Greeting';
@@ -119,6 +119,7 @@ export class DialogAudioComponent {
       this.showbutton = true;
       this.AudioOption = 'Delete';
       this.audioFiles.push(this.data.downloadaudioURL);
+
     } else {
       this.checkpermissions();
     }
@@ -196,151 +197,236 @@ export class DialogAudioComponent {
   }
   onChange() {
     switch (this.AudioOption) {
+
       case 'Delete': {
-        this.settingMsg = 'Deleting...';
-        this.showbutton = false;
-        const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-        this.afs.firestore.runTransaction( transaction =>
-          transaction.get(ref).then(sfdoc => {
-            this.savetoDB = {...sfdoc.data().profileData[0]};
-            transaction.update(ref, {profileData: firestore.FieldValue.arrayRemove(this.savetoDB) } );
-            this.savetoDB.downloadaudioURL = 'here';
-            transaction.update(ref, {profileData: firestore.FieldValue.arrayUnion(this.savetoDB) } );
-          })
-        ).then(successdb => {
-          this.audioFiles.pop();
+        //first always check if the storage is valid.
+        this.storageRef = this.storage.storage.refFromURL(this.data.downloadaudioURL).getDownloadURL().then(url => {
+          this.settingMsg = 'Deleting...';
+          this.showbutton = false;          
           this.showspinner = true;
           this.storage.storage.refFromURL(this.data.downloadaudioURL).delete().then(success => {
-            this.data.downloadaudioURL = '';
-            this.savetoDB.downloadaudioURL = '';
-            this.checkpermissions();
-            this.showspinner = false;
-          }).catch(error => {
+            const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+            this.audioFiles.pop();
+            this.afs.firestore.runTransaction(transaction =>
+              transaction.get(ref).then(sfdoc => {
+                this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+                this.savetoDB.downloadaudioURL = '';
+                transaction.update(ref, this.savetoDB);
+              })
+            ).then(successtran => {//update in DB done
+              this.data.downloadaudioURL = '';
+              this.checkpermissions();
+              this.showspinner = false;
+            }).catch(error => {//DB update fail due to internet failure in 20 sec
+              console.log('reached DB');
+              this.showspinner = false;
+              //this.audioFiles.push(this.data.downloadaudioURL);
+              this.showbutton = true;
+              alert('Uh-oh, Connection Issue, Try Again');
+              this.settingMsg = 'Play your Voice Greeting';
+              //alert is taken care
+            });
+  
+          }).catch(error => {//reaches here after solid 1 min
+  
             this.showspinner = false;
             this.showbutton = true;
+            //this.audioFiles.push(this.data.downloadaudioURL);
+            this.settingMsg = 'Play your Voice Greeting';
+            alert('Uh-oh, Connection Issue, Try Again');
+            //alert is taken care
+          });
+          
+        }).catch(error => {
+          const refagin = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+          this.afs.firestore.runTransaction(transaction =>
+            transaction.get(refagin).then(sfdoc => {
+              this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+              if (this.savetoDB.downloadaudioURL !== '') {
+                this.savetoDB.downloadaudioURL = '';
+                transaction.update(refagin, this.savetoDB);
+              }
+            })
+          ).then(successtran => {//update in DB done
+            this.data.downloadaudioURL = '';
+            this.checkpermissions();
+            this.showspinner = false;
+            this.showbutton = false;
+            this.audioFiles.pop();
+          }).catch(error => {
+            this.showspinner = false;
             this.audioFiles.push(this.data.downloadaudioURL);
             this.settingMsg = 'Play your Voice Greeting';
-            alert('Uh-oh, Connection Issue, Try Delete Again');
+
           });
-        }).catch(error => {
-          this.showspinner = false;
-          this.showbutton = true;
-          alert('Uh-oh, Connection Issue, Try Delete Again');
-          this.settingMsg = 'Play your Voice Greeting';
+        });
+        break;
+    }
+      case 'Settings': {
+      return;
+    }
+  }
+}
+goback() {
+  this.audioFiles.pop();
+  this.dialogRef.close(this.data);
+}
+initiateRecording() {
+  if (this.state === RecordingState.STOPPED) {
+    this.settingMsg = 'Recording your Greeting';
+    const mediaConstraints = {
+      video: false,
+      audio: true
+    };
+    navigator.mediaDevices
+      .getUserMedia(mediaConstraints)
+      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
+    this.seconds = 9;
+    this.state = RecordingState.RECORDING;
+    this.clearTimer();
+    this.intervalId = window.setInterval(() => {
+      this.seconds -= 1;
+      if (this.seconds === 0) {
+        this.state = RecordingState.STOPPED;
+        this.mediaRecorder.stop();
+        this.settingMsg = 'Newly Recorded Greeting';
+        this.streamRef.getTracks().map((val) => {
+          val.stop();
           return;
         });
-        return;
+
       }
-      case 'Settings': {
-        return;
-      }
+    }, 1000);
+
+
+  } else {
+    this.state = RecordingState.STOPPED;
+    this.mediaRecorder.stop();
+    this.settingMsg = 'Newly Recorded Greeting';
+    this.seconds = 9;
+    this.clearTimer();
+    this.streamRef.getTracks().map((val) => {
+      val.stop();
+    });
+  }
+}
+clearTimer() {
+  clearInterval(this.intervalId);
+}
+successCallback(stream) {
+  this.mediaRecorder = new MediaRecorder(stream);
+  this.streamRef = stream;
+  this.mediaRecorder.start();
+
+  this.mediaRecorder.onstop = e => {
+    const blob = new Blob(this.chunks, { type: 'audio/ogg; codecs=opus' });
+    const date = new Date().valueOf();
+    let text = '';
+    const possibleText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 5; i++) {
+      text += possibleText.charAt(Math.floor(Math.random() * possibleText.length));
     }
-  }
-  goback() {
-    this.audioFiles.pop();
-    this.dialogRef.close(this.data);
-  }
-  initiateRecording() {
-    if (this.state === RecordingState.STOPPED) {
-      this.settingMsg = 'Recording your Greeting';
-      const mediaConstraints = {
-        video: false,
-        audio: true
-      };
-      navigator.mediaDevices
-        .getUserMedia(mediaConstraints)
-        .then(this.successCallback.bind(this), this.errorCallback.bind(this));
-      this.seconds = 9;
-      this.state = RecordingState.RECORDING;
-      this.clearTimer();
-      this.intervalId = window.setInterval(() => {
-        this.seconds -= 1;
-        if (this.seconds === 0) {
-          this.state = RecordingState.STOPPED;
-          this.mediaRecorder.stop();
-          this.settingMsg = 'Newly Recorded Greeting';
-          this.streamRef.getTracks().map((val) => {
-            val.stop();
-            return;
+    const imageName = date + '.' + text + '.jpeg';
+    this.imageFile = new File([blob], imageName, { type: 'audio/ogg; codecs=opus' });
+    this.chunks.pop();
+    const audioURL = URL.createObjectURL(blob);
+    const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+    //audio/${new Date().getTime()}_${text}
+    this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
+      if (uploadstat != null) {
+        uploadstat.ref.getDownloadURL().then(downloadURL => {
+          this.afs.firestore.runTransaction(transaction =>
+            transaction.get(reference).then(sfdoc => {
+              this.savetoDB = { ...sfdoc.data().profileData[0] };
+              transaction.update(reference, { profileData: firestore.FieldValue.arrayRemove(this.savetoDB) });
+              this.savetoDB.downloadaudioURL = downloadURL;
+              transaction.update(reference, { profileData: firestore.FieldValue.arrayUnion(this.savetoDB) });
+            })
+          ).then(successdb => {
+            this.showmicrophone = false;
+            this.disablemicrophone = false;
+            this.showbutton = true;
+            this.settingMsg = 'Play your Voice Greeting';
+          }).catch(error => {
+            this.showmicrophone = true;
+            this.disablemicrophone = false;
+            this.showbutton = false;
+            this.settingMsg = 'Set Voice Greeting';
+            this.audioFiles.pop();
           });
 
-        }
-      }, 1000);
-
-
-    } else {
-      this.state = RecordingState.STOPPED;
-      this.mediaRecorder.stop();
-      this.settingMsg = 'Newly Recorded Greeting';
-      this.seconds = 9;
-      this.clearTimer();
-      this.streamRef.getTracks().map((val) => {
-        val.stop();
-      });
-    }
-  }
-  clearTimer() {
-    clearInterval(this.intervalId);
-  }
-  successCallback(stream) {
-    this.mediaRecorder = new MediaRecorder(stream);
-    this.streamRef = stream;
-    this.mediaRecorder.start();
-
-    this.mediaRecorder.onstop = e => {
-      const blob = new Blob(this.chunks, { type: 'audio/ogg; codecs=opus' });
-      const date = new Date().valueOf();
-      let text = '';
-      const possibleText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      for (let i = 0; i < 5; i++) {
-        text += possibleText.charAt(Math.floor(Math.random() * possibleText.length));
+        });
       }
-      const imageName = date + '.' + text + '.jpeg';
-      this.imageFile = new File([blob], imageName, { type: 'audio/ogg; codecs=opus' });
-      this.chunks.pop();
-      const audioURL = URL.createObjectURL(blob);
-      const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-      this.storage.upload(`audio/${new Date().getTime()}_${text}`, this.imageFile).then(uploadstat => {
-        if (uploadstat != null) {
-          uploadstat.ref.getDownloadURL().then(downloadURL => {
-            this.afs.firestore.runTransaction( transaction =>
-              transaction.get(reference).then(sfdoc => {
-                this.savetoDB = {...sfdoc.data().profileData[0]};
-                transaction.update(reference, {profileData: firestore.FieldValue.arrayRemove(this.savetoDB) } );
-                this.savetoDB.downloadaudioURL = downloadURL;
-                transaction.update(reference, {profileData: firestore.FieldValue.arrayUnion(this.savetoDB) } );
-              })
-            ).then(successdb => {
-              this.showmicrophone = false;
-              this.disablemicrophone = false;
-              this.showbutton = true;
-              this.settingMsg = 'Play your Voice Greeting';
-            }).catch(error => {
-              this.showmicrophone = true;
-              this.disablemicrophone = false;
-              this.showbutton = false;
-              this.settingMsg = 'Set Voice Greeting';
-              this.audioFiles.pop();
-            });
-
-          });
-        }
-      });
+    });
 
 
-      this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
+    this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
 
-      this.cd.detectChanges();
-    };
-    this.mediaRecorder.ondataavailable = e => {
-      this.chunks.push(e.data);
-      
-
-    };
-  }
-  errorCallback(error) {
-    this.error = 'Can not play audio in your browser';
-  }
+    this.cd.detectChanges();
+  };
+  this.mediaRecorder.ondataavailable = e => {
+    this.chunks.push(e.data);
+  };
+}
+errorCallback(error) {
+  this.error = 'Can not play audio in your browser';
+}
 
 }
 
+
+
+/*this.afs.firestore.runTransaction( transaction =>
+  transaction.get(ref).then(sfdoc => {
+    this.savetoDB = {...sfdoc.data().profileData[0]};
+    transaction.update(ref, {profileData: firestore.FieldValue.arrayRemove(this.savetoDB) } );
+    this.savetoDB.downloadaudioURL = 'here';
+    transaction.update(ref, {profileData: firestore.FieldValue.arrayUnion(this.savetoDB) } );
+  })*/
+
+
+/*
+this.settingMsg = 'Deleting...';
+this.showbutton = false;
+const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+const refe = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+ref.update(
+{deleteStarted: true}
+
+).then(successdb => {
+
+this.storage.storage.refFromURL(this.data.downloadaudioURL).delete().then(success => {
+  this.audioFiles.pop();
+  this.showspinner = true;
+  refe.update(
+    {deleteStarted: false, downloadaudioURL: '', audiofullpath: ''}).then(successdbfinish => {
+
+      this.data.downloadaudioURL = '';
+      this.savetoDB.downloadaudioURL = '';
+      this.checkpermissions();
+      this.showspinner = false;
+    }).catch(error => {
+      alert('Uh-oh, Connection Issue, Try Again');
+      this.dialogRef.close(this.data);
+    });
+}).catch(error => {
+  this.showspinner = false;
+  this.showbutton = true;
+  this.audioFiles.push(this.data.downloadaudioURL);
+  this.settingMsg = 'Play your Voice Greeting';
+  alert('Uh-oh, Connection Issue, Try Delete Again');
+  return;
+});
+}).catch(error => {
+this.showspinner = false;
+this.showbutton = true;
+alert('Uh-oh, Connection Issue, Try Delete Again');
+this.settingMsg = 'Play your Voice Greeting';
+return;
+});
+return;
+}
+case 'Settings': {
+return;
+}
+*/
