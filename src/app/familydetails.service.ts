@@ -58,7 +58,7 @@ export class FamilydetailsService {
     customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2Fhi.jpg?alt=media&token=7877d272-94c1-4f40-a673-afc81be73cf0',
     //customphotoURL: '',
     GiftsBank: 0,
-    downloadaudioURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/audio%2F1577170280089_wpW9S?alt=media&token=c04d3851-4e82-4cf4-a04d-febd2269b7cc'
+    downloadaudioURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/audio%2F1577182412738_AFSvN?alt=media&token=11c3f070-ba23-46df-af61-8d4ff369d620'
   }
   public savedValue: BehaviorSubject<UserInfoLogin> = new BehaviorSubject<UserInfoLogin>(this.AfterLoginData);
   currentMessageData = this.savedValue.asObservable();

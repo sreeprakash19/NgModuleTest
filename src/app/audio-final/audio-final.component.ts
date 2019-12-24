@@ -200,13 +200,15 @@ export class DialogAudioComponent {
 
       case 'Delete': {
         //first always check if the storage is valid.
+        this.settingMsg = 'Deleting...';
+        this.showbutton = false;          
+        this.showspinner = true;
         this.storageRef = this.storage.storage.refFromURL(this.data.downloadaudioURL).getDownloadURL().then(url => {
-          this.settingMsg = 'Deleting...';
-          this.showbutton = false;          
-          this.showspinner = true;
+          console.log('Greeting present in storage');
           this.storage.storage.refFromURL(this.data.downloadaudioURL).delete().then(success => {
+            console.log('Deleted form storage');
             const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-            this.audioFiles.pop();
+            
             this.afs.firestore.runTransaction(transaction =>
               transaction.get(ref).then(sfdoc => {
                 this.savetoDB = sfdoc.data() as UserInfoLoginArray;
@@ -214,11 +216,13 @@ export class DialogAudioComponent {
                 transaction.update(ref, this.savetoDB);
               })
             ).then(successtran => {//update in DB done
+              console.log('deleted in DB');
+              this.audioFiles.pop();
               this.data.downloadaudioURL = '';
               this.checkpermissions();
               this.showspinner = false;
             }).catch(error => {//DB update fail due to internet failure in 20 sec
-              console.log('reached DB');
+              console.log('Deleted Failed in DB');
               this.showspinner = false;
               //this.audioFiles.push(this.data.downloadaudioURL);
               this.showbutton = true;
@@ -238,24 +242,29 @@ export class DialogAudioComponent {
           });
           
         }).catch(error => {
+          console.log('Deleted Failed in storage');
+          this.settingMsg = 'Retry Deleting...';
+          this.showbutton = false;          
+          this.showspinner = true;
           const refagin = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
           this.afs.firestore.runTransaction(transaction =>
             transaction.get(refagin).then(sfdoc => {
               this.savetoDB = sfdoc.data() as UserInfoLoginArray;
-              if (this.savetoDB.downloadaudioURL !== '') {
-                this.savetoDB.downloadaudioURL = '';
-                transaction.update(refagin, this.savetoDB);
-              }
+              this.savetoDB.downloadaudioURL = '';
+              transaction.update(refagin, this.savetoDB);
             })
           ).then(successtran => {//update in DB done
+            console.log('Retry Deleted in DB');
             this.data.downloadaudioURL = '';
             this.checkpermissions();
             this.showspinner = false;
             this.showbutton = false;
             this.audioFiles.pop();
           }).catch(error => {
+            console.log('Retry Deleted Failed in DB');
             this.showspinner = false;
-            this.audioFiles.push(this.data.downloadaudioURL);
+            this.showbutton = true;
+            //this.audioFiles.push(this.data.downloadaudioURL);
             this.settingMsg = 'Play your Voice Greeting';
 
           });
