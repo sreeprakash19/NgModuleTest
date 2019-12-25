@@ -4,6 +4,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { firestore } from 'firebase/app';
+import * as firebase from 'firebase/app';
 import { DomSanitizer } from '@angular/platform-browser';
 declare var MediaRecorder: any;
 
@@ -44,7 +45,7 @@ export class AudioFinalComponent implements OnInit {
     });
     this.dialogRefAudio.afterClosed().subscribe(result => {
       this.svc.AfterLoginSend(result);//tmp
-      console.log('closed');
+      console.log('result');
     });
 
   }
@@ -77,7 +78,7 @@ export class AudioFinalComponent implements OnInit {
   <mat-spinner *ngIf= "showspinner"></mat-spinner>
   <div mat-dialog-actions>
   <button mat-raised-button color ="primary" (click)="onChange()" *ngIf="showbutton" [disabled]= "disablebutton" >{{AudioOption}} </button>
-  <button mat-raised-button  color="primary" (click)="goback()" cdkFocusInitial>Back</button>
+  <button mat-raised-button  color="primary" (click)="goback()" *ngIf="showback" cdkFocusInitial>Back</button>
   </div>
   </mat-card> 
 `
@@ -104,30 +105,71 @@ export class DialogAudioComponent {
   imageFile: any;
   private error;
   storageRef: any;
+  saveRef: any;
+  private basePath = '/audio';
+  showback = true;
 
   constructor(public dialogRef: MatDialogRef<DialogAudioComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserInfoLogin, private cd: ChangeDetectorRef,
     private storage: AngularFireStorage, private afs: AngularFirestore, private dom: DomSanitizer) {
+
     this.state = RecordingState.STOPPED;
     this.savetoDB = { ... this.data };
     this.itemDoc = this.afs.doc<UserInfoLoginArray>(`testcollections/${this.data.Uid}`);
-
     //this.itemDoc =this.afs.collection('testcollections').doc(`${this.data.Uid}`);
-    if (data.downloadaudioURL != null) {
+    if (data.downloadaudioURL !== '') {
       this.settingMsg = 'Play your Voice Greeting';
       this.showmicrophone = false;
       this.showbutton = true;
       this.AudioOption = 'Delete';
       this.audioFiles.push(this.data.downloadaudioURL);
-
     } else {
-      this.checkpermissions();
+      console.log('reached null');
+      this.showspinner = true;
+      this.storageRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
+      this.storageRef.getDownloadURL().then(url => {
+        console.log('storage orphan');
+        const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+        this.afs.firestore.runTransaction(transaction =>
+          transaction.get(ref).then(sfdoc => {
+            this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+            this.savetoDB.downloadaudioURL = url;
+            transaction.update(ref, this.savetoDB);
+          })
+        ).then(successtran => {//update in DB done
+          console.log('db orphan');
+          //need to show C1
+          this.data.downloadaudioURL = url;
+          this.showspinner = false;
+          this.settingMsg = 'Play your Voice Greeting';
+          this.showmicrophone = false;
+          this.showbutton = true;
+          this.AudioOption = 'Delete';
+          this.audioFiles.push(this.data.downloadaudioURL);
+        }).catch(error => {//DB update fail due to internet failure in 20 sec
+          //we need to show C2
+          this.settingMsg = 'Play your Voice Greeting';
+          this.audioFiles.push('');
+          this.showspinner = false;
+          this.showbutton = false;
+        });
+      }).catch(error => {
+        if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
+          this.showspinner = false;
+          this.checkpermissions();
+        } else {
+          //we need to show C2
+          this.settingMsg = 'Play your Voice Greeting';
+          this.audioFiles.push('');
+          this.showspinner = false;
+          this.showbutton = false;
+        }
+      });
     }
-
   }
+
   checkpermissions() {
     navigator.permissions.query({ name: 'microphone' }).then((result) => {
-
       if (result.state === 'granted') {
         console.log('gr');
         this.settingMsg = 'Set your Voice Greeting';
@@ -145,7 +187,7 @@ export class DialogAudioComponent {
       } else if (result.state === 'denied') {
         console.log('de');
         this.settingMsg = 'Microphone setting is Denied';
-        this.showmicrophone = false;
+        this.showmicrophone = true;
         this.disablemicrophone = true;
         this.showbutton = false;
         this.AudioOption = '';
@@ -191,24 +233,120 @@ export class DialogAudioComponent {
       };
     });
   }
+
   connectionerror() {
     this.disablebutton = true;
     alert('Uh-oh, Connection Issue, Check Internet connection');
   }
-  onChange() {
-    switch (this.AudioOption) {
 
+  onChange() {
+    if (this.AudioOption === 'Retry Delete') {
+      this.AudioOption = 'Delete';
+    }
+    switch (this.AudioOption) {
+      case 'Retry Save': {
+        this.settingMsg = 'Saving...';
+        this.showback = false;
+        this.showbutton = false;
+        this.showspinner = true;
+        this.saveRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
+        this.saveRef.getDownloadURL().then(url => {
+          this.data.downloadaudioURL = url;
+          const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+          this.afs.firestore.runTransaction(transaction =>
+            transaction.get(ref).then(sfdoc => {
+              this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+              this.savetoDB.downloadaudioURL = url;
+              transaction.update(ref, this.savetoDB);
+            })
+          ).then(successtran => {//update in DB done
+            console.log('updated in DB');
+            this.audioFiles.pop();
+            this.audioFiles.push(this.data.downloadaudioURL);
+            this.showspinner = false;
+            this.showback = true;
+          }).catch(error => {//DB update fail due to internet failure in 20 sec
+            console.log('update Failed in DB');
+            this.showspinner = false;
+            this.showbutton = true;
+            this.AudioOption = 'Retry Save';
+            alert('Uh-oh, Connection Issue, Try Again');
+            this.settingMsg = 'Play your Voice Greeting';
+          });
+
+        }).catch(error => {
+          if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
+            //upload to storage and update DB
+            const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+            this.showback = false;
+            this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
+              if (uploadstat != null) {
+                uploadstat.ref.getDownloadURL().then(downloadURL => {
+                  this.afs.firestore.runTransaction(transaction =>
+                    transaction.get(reference).then(sfdoc => {
+                      this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+                      this.savetoDB.downloadaudioURL = downloadURL;
+                      transaction.update(reference, this.savetoDB);
+                    })
+                  ).then(successdb => {
+                    this.data.downloadaudioURL = downloadURL;
+                    this.audioFiles.push(downloadURL);
+                    this.showmicrophone = false;
+                    this.disablemicrophone = false;
+                    this.showbutton = true;
+                    this.settingMsg = 'Play your Voice Greeting';
+                    this.showback = true;
+                  }).catch(error => {
+                    console.log('Save Failed in Storage');
+                    this.showspinner = false;
+                    this.showmicrophone = false;
+                    this.audioFiles.push(downloadURL);
+                    this.data.downloadaudioURL = this.data.downloadaudioURL;
+                    this.showbutton = true;
+                    this.AudioOption = 'Retry Save';
+                    this.showback = true;
+                    alert('Uh-oh, Connection Issue, Try Again');
+                    this.settingMsg = 'Play your Voice Greeting';
+                  });
+                });
+              }
+            }).catch(error => {//DB update fail due to internet failure in 20 sec
+              console.log('Save Failed in Storage');
+              this.showspinner = false;
+              this.audioFiles.push(this.data.downloadaudioURL);
+              this.data.downloadaudioURL = this.data.downloadaudioURL;
+              this.showmicrophone = false;
+              this.showbutton = true;
+              this.AudioOption = 'Retry Save';
+              alert('Uh-oh, Connection Issue, Try Again');
+              this.settingMsg = 'Play your Voice Greeting';
+              this.showback = true;
+              //alert is taken care
+            });
+          }
+          else {
+            //internet off so try again
+            console.log('Retry Save Failed in storage');
+            this.showspinner = false;
+            this.showbutton = true;
+            this.settingMsg = 'Play your Voice Greeting';
+            this.AudioOption = 'Retry Save';
+            alert('Uh-oh, Connection Issue, Try Again');
+          }
+        });
+        break;
+      }
       case 'Delete': {
         //first always check if the storage is valid.
         this.settingMsg = 'Deleting...';
-        this.showbutton = false;          
+        this.showback = false;
+        this.showbutton = false;
         this.showspinner = true;
         this.storageRef = this.storage.storage.refFromURL(this.data.downloadaudioURL).getDownloadURL().then(url => {
           console.log('Greeting present in storage');
           this.storage.storage.refFromURL(this.data.downloadaudioURL).delete().then(success => {
             console.log('Deleted form storage');
             const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-            
             this.afs.firestore.runTransaction(transaction =>
               transaction.get(ref).then(sfdoc => {
                 this.savetoDB = sfdoc.data() as UserInfoLoginArray;
@@ -221,165 +359,195 @@ export class DialogAudioComponent {
               this.data.downloadaudioURL = '';
               this.checkpermissions();
               this.showspinner = false;
+              this.showback = true;
             }).catch(error => {//DB update fail due to internet failure in 20 sec
               console.log('Deleted Failed in DB');
               this.showspinner = false;
               //this.audioFiles.push(this.data.downloadaudioURL);
               this.showbutton = true;
+              this.AudioOption = 'Retry Delete';
               alert('Uh-oh, Connection Issue, Try Again');
               this.settingMsg = 'Play your Voice Greeting';
               //alert is taken care
             });
-  
+
           }).catch(error => {//reaches here after solid 1 min
-  
             this.showspinner = false;
             this.showbutton = true;
             //this.audioFiles.push(this.data.downloadaudioURL);
             this.settingMsg = 'Play your Voice Greeting';
+            this.AudioOption = 'Retry Delete';
             alert('Uh-oh, Connection Issue, Try Again');
             //alert is taken care
           });
-          
         }).catch(error => {
-          console.log('Deleted Failed in storage');
-          this.settingMsg = 'Retry Deleting...';
-          this.showbutton = false;          
-          this.showspinner = true;
-          const refagin = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-          this.afs.firestore.runTransaction(transaction =>
-            transaction.get(refagin).then(sfdoc => {
-              this.savetoDB = sfdoc.data() as UserInfoLoginArray;
-              this.savetoDB.downloadaudioURL = '';
-              transaction.update(refagin, this.savetoDB);
-            })
-          ).then(successtran => {//update in DB done
-            console.log('Retry Deleted in DB');
-            this.data.downloadaudioURL = '';
-            this.checkpermissions();
-            this.showspinner = false;
+          if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
+            console.log('Deleted Failed in db');
+            this.settingMsg = 'Retry Deleting...';
             this.showbutton = false;
-            this.audioFiles.pop();
-          }).catch(error => {
-            console.log('Retry Deleted Failed in DB');
+            this.showspinner = true;
+            const refagin = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+            this.afs.firestore.runTransaction(transaction =>
+              transaction.get(refagin).then(sfdoc => {
+                this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+                this.savetoDB.downloadaudioURL = '';
+                transaction.update(refagin, this.savetoDB);
+              })
+            ).then(successtran => {//update in DB done
+              console.log('Retry Deleted in DB');
+              this.data.downloadaudioURL = '';
+              this.checkpermissions();
+              this.showspinner = false;
+              this.showbutton = false;
+              this.audioFiles.pop();
+            }).catch(error => {
+              console.log('Retry Deleted Failed in DB');
+              this.showspinner = false;
+              this.showbutton = true;
+              this.AudioOption = 'Retry Delete';
+              this.settingMsg = 'Play your Voice Greeting';
+            });
+          } else {
+            console.log('Retry Deleted Failed in storage');
             this.showspinner = false;
             this.showbutton = true;
-            //this.audioFiles.push(this.data.downloadaudioURL);
             this.settingMsg = 'Play your Voice Greeting';
-
-          });
+            this.AudioOption = 'Retry Delete';
+            alert('Uh-oh, Connection Issue, Try Again');
+          }
         });
         break;
-    }
-      case 'Settings': {
-      return;
-    }
-  }
-}
-goback() {
-  this.audioFiles.pop();
-  this.dialogRef.close(this.data);
-}
-initiateRecording() {
-  if (this.state === RecordingState.STOPPED) {
-    this.settingMsg = 'Recording your Greeting';
-    const mediaConstraints = {
-      video: false,
-      audio: true
-    };
-    navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
-    this.seconds = 9;
-    this.state = RecordingState.RECORDING;
-    this.clearTimer();
-    this.intervalId = window.setInterval(() => {
-      this.seconds -= 1;
-      if (this.seconds === 0) {
-        this.state = RecordingState.STOPPED;
-        this.mediaRecorder.stop();
-        this.settingMsg = 'Newly Recorded Greeting';
-        this.streamRef.getTracks().map((val) => {
-          val.stop();
-          return;
-        });
-
       }
-    }, 1000);
-
-
-  } else {
-    this.state = RecordingState.STOPPED;
-    this.mediaRecorder.stop();
-    this.settingMsg = 'Newly Recorded Greeting';
-    this.seconds = 9;
-    this.clearTimer();
-    this.streamRef.getTracks().map((val) => {
-      val.stop();
-    });
-  }
-}
-clearTimer() {
-  clearInterval(this.intervalId);
-}
-successCallback(stream) {
-  this.mediaRecorder = new MediaRecorder(stream);
-  this.streamRef = stream;
-  this.mediaRecorder.start();
-
-  this.mediaRecorder.onstop = e => {
-    const blob = new Blob(this.chunks, { type: 'audio/ogg; codecs=opus' });
-    const date = new Date().valueOf();
-    let text = '';
-    const possibleText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 5; i++) {
-      text += possibleText.charAt(Math.floor(Math.random() * possibleText.length));
+      case 'Settings': {
+        const mediaConstraints = {
+          video: false,
+          audio: true
+        };
+        navigator.mediaDevices
+          .getUserMedia(mediaConstraints);
+        break;
+      }
     }
-    const imageName = date + '.' + text + '.jpeg';
-    this.imageFile = new File([blob], imageName, { type: 'audio/ogg; codecs=opus' });
-    this.chunks.pop();
-    const audioURL = URL.createObjectURL(blob);
-    const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-    //audio/${new Date().getTime()}_${text}
-    this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
-      if (uploadstat != null) {
-        uploadstat.ref.getDownloadURL().then(downloadURL => {
-          this.afs.firestore.runTransaction(transaction =>
-            transaction.get(reference).then(sfdoc => {
-              this.savetoDB = { ...sfdoc.data().profileData[0] };
-              transaction.update(reference, { profileData: firestore.FieldValue.arrayRemove(this.savetoDB) });
-              this.savetoDB.downloadaudioURL = downloadURL;
-              transaction.update(reference, { profileData: firestore.FieldValue.arrayUnion(this.savetoDB) });
-            })
-          ).then(successdb => {
-            this.showmicrophone = false;
-            this.disablemicrophone = false;
-            this.showbutton = true;
-            this.settingMsg = 'Play your Voice Greeting';
-          }).catch(error => {
-            this.showmicrophone = true;
-            this.disablemicrophone = false;
-            this.showbutton = false;
-            this.settingMsg = 'Set Voice Greeting';
-            this.audioFiles.pop();
+  }
+  goback() {
+    this.audioFiles.pop();
+    this.dialogRef.close(this.data);
+  }
+  initiateRecording() {
+    if (this.state === RecordingState.STOPPED) {//start recording
+      this.settingMsg = 'Recording your Greeting';
+      const mediaConstraints = {
+        video: false,
+        audio: true
+      };
+      navigator.mediaDevices
+        .getUserMedia(mediaConstraints)
+        .then(this.successCallback.bind(this), this.errorCallback.bind(this));
+      this.seconds = 9;
+      this.state = RecordingState.RECORDING;
+      this.clearTimer();
+      this.intervalId = window.setInterval(() => {
+        this.seconds -= 1;
+        if (this.seconds === 0) {//if timer triggers the stop
+          this.state = RecordingState.STOPPED;
+          this.mediaRecorder.stop();
+          this.settingMsg = 'Newly Recorded Greeting';
+          this.streamRef.getTracks().map((val) => {
+            val.stop();
+            return;
           });
 
-        });
+        }
+      }, 1000);
+    } else {//to finish recording
+      this.state = RecordingState.STOPPED;
+      this.mediaRecorder.stop();
+      this.settingMsg = 'Newly Recorded Greeting';
+      this.seconds = 9;
+      this.clearTimer();
+      this.streamRef.getTracks().map((val) => {
+        val.stop();
+      });
+    }
+  }
+  clearTimer() {
+    clearInterval(this.intervalId);
+  }
+  successCallback(stream) {
+    this.mediaRecorder = new MediaRecorder(stream);
+    this.streamRef = stream;
+    this.mediaRecorder.start();
+
+    this.mediaRecorder.onstop = e => {
+      const blob = new Blob(this.chunks, { type: 'audio/ogg; codecs=opus' });
+      const date = new Date().valueOf();
+      let text = '';
+      const possibleText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for (let i = 0; i < 5; i++) {
+        text += possibleText.charAt(Math.floor(Math.random() * possibleText.length));
       }
-    });
+      const imageName = date + '.' + text + '.jpeg';
+      this.imageFile = new File([blob], imageName, { type: 'audio/ogg; codecs=opus' });
+      this.chunks.pop();
+      const audioURL = URL.createObjectURL(blob);
+      const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+      //audio/${new Date().getTime()}_${text}
+      this.showback = false;
+      this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
+        if (uploadstat != null) {
+          uploadstat.ref.getDownloadURL().then(downloadURL => {
+            this.afs.firestore.runTransaction(transaction =>
+              transaction.get(reference).then(sfdoc => {
+                this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+                this.savetoDB.downloadaudioURL = downloadURL;
+                transaction.update(reference, this.savetoDB);
+              })
+            ).then(successdb => {
+              this.data.downloadaudioURL = downloadURL;
+              this.audioFiles.push(downloadURL);
+              this.showmicrophone = false;
+              this.disablemicrophone = false;
+              this.showbutton = true;
+              this.settingMsg = 'Play your Voice Greeting';
+              this.showback = true;
+            }).catch(error => {
+              console.log('Save Failed in Storage');
+              this.showspinner = false;
+              this.showmicrophone = false;
+              this.audioFiles.push(downloadURL);
+              this.data.downloadaudioURL = audioURL;
+              this.showbutton = true;
+              this.AudioOption = 'Retry Save';
+              this.showback = true;
+              alert('Uh-oh, Connection Issue, Try Again');
+              this.settingMsg = 'Play your Voice Greeting';
+            });
+          });
+        }
+      }).catch(error => {//DB update fail due to internet failure in 20 sec
+        console.log('Save Failed in Storage');
+        this.showspinner = false;
+        this.audioFiles.push(audioURL);
+        this.data.downloadaudioURL = audioURL;
+        this.showmicrophone = false;
+        this.showbutton = true;
+        this.AudioOption = 'Retry Save';
+        alert('Uh-oh, Connection Issue, Try Again');
+        this.settingMsg = 'Play your Voice Greeting';
+        this.showback = true;
+        //alert is taken care
+      });
 
-
-    this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
-
-    this.cd.detectChanges();
-  };
-  this.mediaRecorder.ondataavailable = e => {
-    this.chunks.push(e.data);
-  };
-}
-errorCallback(error) {
-  this.error = 'Can not play audio in your browser';
-}
+      this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
+      this.cd.detectChanges();
+    };
+    this.mediaRecorder.ondataavailable = e => {
+      this.chunks.push(e.data);
+    };
+  }
+  errorCallback(error) {
+    this.error = 'Can not play audio in your browser';
+  }
 
 }
 
@@ -438,4 +606,30 @@ return;
 case 'Settings': {
 return;
 }
+
+//go to A
+          this.showspinner = false;
+          this.checkpermissions();
+//go to C1
+          this.settingMsg = 'Play your Voice Greeting';
+          this.data.downloadaudioURL = url;
+          this.audioFiles.push(this.data.downloadaudioURL);
+          this.showspinner = false;
+          this.showbutton = true;
+          this.AudioOption = 'Delete';
+          this.showmicrophone = false;
+
+//go to C2
+          this.settingMsg = 'Play your Voice Greeting';
+          this.audioFiles.push('');
+          this.showspinner = false;
+          this.showbutton = false;
+          this.AudioOption = 'Delete';
+          this.showmicrophone = false;
+//go to C2-fail
+          this.settingMsg = 'Play your Voice Greeting';
+          this.showspinner = false;
+          this.showbutton = true;
+          this.AudioOption = 'Retry Delete/Save';
+          this.showmicrophone = false;
 */
