@@ -125,6 +125,7 @@ export class DialogAudioComponent {
       this.audioFiles.push(this.data.downloadaudioURL);
     } else {
       console.log('reached null');
+      this.settingMsg = 'Please Wait !..';
       this.showspinner = true;
       this.storageRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
       this.storageRef.getDownloadURL().then(url => {
@@ -249,6 +250,7 @@ export class DialogAudioComponent {
         this.showback = false;
         this.showbutton = false;
         this.showspinner = true;
+        this.cd.detectChanges();
         this.saveRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
         this.saveRef.getDownloadURL().then(url => {
           this.data.downloadaudioURL = url;
@@ -265,13 +267,15 @@ export class DialogAudioComponent {
             this.audioFiles.push(this.data.downloadaudioURL);
             this.showspinner = false;
             this.showback = true;
+            this.cd.detectChanges();
           }).catch(error => {//DB update fail due to internet failure in 20 sec
             console.log('update Failed in DB');
             this.showspinner = false;
             this.showbutton = true;
             this.AudioOption = 'Retry Save';
-            alert('Uh-oh, Connection Issue, Try Again');
             this.settingMsg = 'Play your Voice Greeting';
+            this.cd.detectChanges();
+            alert('Uh-oh, Connection Issue, Try Again');
           });
 
         }).catch(error => {
@@ -279,6 +283,7 @@ export class DialogAudioComponent {
             //upload to storage and update DB
             const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
             this.showback = false;
+            this.cd.detectChanges();
             this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
               if (uploadstat != null) {
                 uploadstat.ref.getDownloadURL().then(downloadURL => {
@@ -296,6 +301,7 @@ export class DialogAudioComponent {
                     this.showbutton = true;
                     this.settingMsg = 'Play your Voice Greeting';
                     this.showback = true;
+                    this.cd.detectChanges();
                   }).catch(error => {
                     console.log('Save Failed in Storage');
                     this.showspinner = false;
@@ -305,8 +311,10 @@ export class DialogAudioComponent {
                     this.showbutton = true;
                     this.AudioOption = 'Retry Save';
                     this.showback = true;
-                    alert('Uh-oh, Connection Issue, Try Again');
                     this.settingMsg = 'Play your Voice Greeting';
+                    this.cd.detectChanges();
+                    alert('Uh-oh, Connection Issue, Try Again');
+                    
                   });
                 });
               }
@@ -317,10 +325,11 @@ export class DialogAudioComponent {
               this.data.downloadaudioURL = this.data.downloadaudioURL;
               this.showmicrophone = false;
               this.showbutton = true;
-              this.AudioOption = 'Retry Save';
-              alert('Uh-oh, Connection Issue, Try Again');
+              this.AudioOption = 'Retry Save';              
               this.settingMsg = 'Play your Voice Greeting';
               this.showback = true;
+              this.cd.detectChanges();
+              alert('Uh-oh, Connection Issue, Try Again');
               //alert is taken care
             });
           }
@@ -331,6 +340,7 @@ export class DialogAudioComponent {
             this.showbutton = true;
             this.settingMsg = 'Play your Voice Greeting';
             this.AudioOption = 'Retry Save';
+            this.cd.detectChanges();
             alert('Uh-oh, Connection Issue, Try Again');
           }
         });
@@ -342,6 +352,7 @@ export class DialogAudioComponent {
         this.showback = false;
         this.showbutton = false;
         this.showspinner = true;
+        this.cd.detectChanges();
         this.storageRef = this.storage.storage.refFromURL(this.data.downloadaudioURL).getDownloadURL().then(url => {
           console.log('Greeting present in storage');
           this.storage.storage.refFromURL(this.data.downloadaudioURL).delete().then(success => {
@@ -360,12 +371,14 @@ export class DialogAudioComponent {
               this.checkpermissions();
               this.showspinner = false;
               this.showback = true;
+              this.cd.detectChanges();
             }).catch(error => {//DB update fail due to internet failure in 20 sec
               console.log('Deleted Failed in DB');
               this.showspinner = false;
               //this.audioFiles.push(this.data.downloadaudioURL);
               this.showbutton = true;
               this.AudioOption = 'Retry Delete';
+              this.cd.detectChanges();
               alert('Uh-oh, Connection Issue, Try Again');
               this.settingMsg = 'Play your Voice Greeting';
               //alert is taken care
@@ -377,6 +390,7 @@ export class DialogAudioComponent {
             //this.audioFiles.push(this.data.downloadaudioURL);
             this.settingMsg = 'Play your Voice Greeting';
             this.AudioOption = 'Retry Delete';
+            this.cd.detectChanges();
             alert('Uh-oh, Connection Issue, Try Again');
             //alert is taken care
           });
@@ -386,6 +400,7 @@ export class DialogAudioComponent {
             this.settingMsg = 'Retry Deleting...';
             this.showbutton = false;
             this.showspinner = true;
+            this.cd.detectChanges();
             const refagin = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
             this.afs.firestore.runTransaction(transaction =>
               transaction.get(refagin).then(sfdoc => {
@@ -400,11 +415,13 @@ export class DialogAudioComponent {
               this.showspinner = false;
               this.showbutton = false;
               this.audioFiles.pop();
+              this.cd.detectChanges();
             }).catch(error => {
               console.log('Retry Deleted Failed in DB');
               this.showspinner = false;
               this.showbutton = true;
               this.AudioOption = 'Retry Delete';
+              this.cd.detectChanges();
               this.settingMsg = 'Play your Voice Greeting';
             });
           } else {
@@ -413,6 +430,7 @@ export class DialogAudioComponent {
             this.showbutton = true;
             this.settingMsg = 'Play your Voice Greeting';
             this.AudioOption = 'Retry Delete';
+            this.cd.detectChanges();
             alert('Uh-oh, Connection Issue, Try Again');
           }
         });
@@ -431,8 +449,10 @@ export class DialogAudioComponent {
   }
 
   goback() {
-    this.audioFiles.pop();
+    //this.audioFiles.pop();
+    //this.cd.markForCheck();
     this.dialogRef.close(this.data);
+    //this.cd.detectChanges();
   }
 
   initiateRecording() {
@@ -506,7 +526,7 @@ export class DialogAudioComponent {
       this.imageFile = new File([blob], imageName, { type: 'audio/ogg; codecs=opus' });
       this.chunks.pop();
       const audioURL = URL.createObjectURL(blob);
-      this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
+      //this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
       const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
       //audio/${new Date().getTime()}_${text}
       
@@ -566,6 +586,10 @@ export class DialogAudioComponent {
     };
     this.mediaRecorder.ondataavailable = e => {
       this.chunks.push(e.data);
+      const blob = new Blob(this.chunks, { type: 'audio/ogg; codecs=opus' });
+      const audioURL = URL.createObjectURL(blob);
+      this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
+      this.cd.detectChanges();
     };
   }
 
