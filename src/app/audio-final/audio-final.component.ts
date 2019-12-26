@@ -176,7 +176,7 @@ export class DialogAudioComponent {
         this.showmicrophone = true;
         this.disablemicrophone = false;
         this.showbutton = false;
-        this.AudioOption = '';
+        
       } else if (result.state === 'prompt') {
         console.log('pr');
         this.settingMsg = 'Set Microphone settings';
@@ -190,7 +190,7 @@ export class DialogAudioComponent {
         this.showmicrophone = true;
         this.disablemicrophone = true;
         this.showbutton = false;
-        this.AudioOption = '';
+        
       }
       result.onchange = (event) => {
         if (result.state === 'granted') {
@@ -200,7 +200,7 @@ export class DialogAudioComponent {
           this.showmicrophone = true;
           this.disablemicrophone = false;
           this.showbutton = false;
-          this.AudioOption = '';
+          
           //this.cd.detectChanges();
           return;
 
@@ -213,7 +213,7 @@ export class DialogAudioComponent {
             this.showmicrophone = false;
             this.disablemicrophone = true;
             this.showbutton = false;
-            this.AudioOption = '';
+            
             //this.cd.detectChanges();
             return;
           } else {
@@ -429,12 +429,15 @@ export class DialogAudioComponent {
       }
     }
   }
+
   goback() {
     this.audioFiles.pop();
     this.dialogRef.close(this.data);
   }
+
   initiateRecording() {
     if (this.state === RecordingState.STOPPED) {//start recording
+      console.log('start Rec');
       this.settingMsg = 'Recording your Greeting';
       const mediaConstraints = {
         video: false,
@@ -450,8 +453,13 @@ export class DialogAudioComponent {
         this.seconds -= 1;
         if (this.seconds === 0) {//if timer triggers the stop
           this.state = RecordingState.STOPPED;
+          this.showbutton = false;
+          this.showspinner = true;
+          this.showmicrophone = false;
+          this.disablemicrophone = false;
           this.mediaRecorder.stop();
-          this.settingMsg = 'Newly Recorded Greeting';
+          this.showback = false;
+          this.settingMsg = 'Saving Recorded Greeting';
           this.streamRef.getTracks().map((val) => {
             val.stop();
             return;
@@ -460,9 +468,15 @@ export class DialogAudioComponent {
         }
       }, 1000);
     } else {//to finish recording
+      console.log('stop Rec');
+      this.showbutton = false;
+      this.showspinner = true;
+      this.showmicrophone = false;
+      this.disablemicrophone = false;
+      this.showback = false;
       this.state = RecordingState.STOPPED;
       this.mediaRecorder.stop();
-      this.settingMsg = 'Newly Recorded Greeting';
+      this.settingMsg = 'Saving Recorded Greeting';
       this.seconds = 9;
       this.clearTimer();
       this.streamRef.getTracks().map((val) => {
@@ -470,9 +484,11 @@ export class DialogAudioComponent {
       });
     }
   }
+
   clearTimer() {
     clearInterval(this.intervalId);
   }
+
   successCallback(stream) {
     this.mediaRecorder = new MediaRecorder(stream);
     this.streamRef = stream;
@@ -490,44 +506,50 @@ export class DialogAudioComponent {
       this.imageFile = new File([blob], imageName, { type: 'audio/ogg; codecs=opus' });
       this.chunks.pop();
       const audioURL = URL.createObjectURL(blob);
+      this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
       const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
       //audio/${new Date().getTime()}_${text}
-      this.showback = false;
+      
+      console.log('start Save');
       this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
         if (uploadstat != null) {
+          console.log('Storage Save');
           uploadstat.ref.getDownloadURL().then(downloadURL => {
             this.afs.firestore.runTransaction(transaction =>
               transaction.get(reference).then(sfdoc => {
                 this.savetoDB = sfdoc.data() as UserInfoLoginArray;
                 this.savetoDB.downloadaudioURL = downloadURL;
+                this.data.downloadaudioURL = downloadURL;
                 transaction.update(reference, this.savetoDB);
               })
             ).then(successdb => {
+              console.log('DB Save');
               this.data.downloadaudioURL = downloadURL;
-              this.audioFiles.push(downloadURL);
-              this.showmicrophone = false;
-              this.disablemicrophone = false;
+              //this.audioFiles.push(this.data.downloadaudioURL);
+              this.showspinner = false;
               this.showbutton = true;
               this.settingMsg = 'Play your Voice Greeting';
               this.showback = true;
+              this.cd.detectChanges();
             }).catch(error => {
               console.log('Save Failed in Storage');
               this.showspinner = false;
               this.showmicrophone = false;
-              this.audioFiles.push(downloadURL);
+              //this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
               this.data.downloadaudioURL = audioURL;
               this.showbutton = true;
               this.AudioOption = 'Retry Save';
               this.showback = true;
               alert('Uh-oh, Connection Issue, Try Again');
               this.settingMsg = 'Play your Voice Greeting';
+              this.cd.detectChanges();
             });
           });
         }
       }).catch(error => {//DB update fail due to internet failure in 20 sec
         console.log('Save Failed in Storage');
         this.showspinner = false;
-        this.audioFiles.push(audioURL);
+        //this.audioFiles.push(audioURL);
         this.data.downloadaudioURL = audioURL;
         this.showmicrophone = false;
         this.showbutton = true;
@@ -535,20 +557,21 @@ export class DialogAudioComponent {
         alert('Uh-oh, Connection Issue, Try Again');
         this.settingMsg = 'Play your Voice Greeting';
         this.showback = true;
+        this.cd.detectChanges();
         //alert is taken care
       });
 
-      this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
-      this.cd.detectChanges();
+      
+      
     };
     this.mediaRecorder.ondataavailable = e => {
       this.chunks.push(e.data);
     };
   }
+
   errorCallback(error) {
     this.error = 'Can not play audio in your browser';
   }
-
 }
 
 
