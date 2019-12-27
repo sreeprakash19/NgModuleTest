@@ -78,7 +78,7 @@ export class AudioFinalComponent implements OnInit {
   <mat-spinner *ngIf= "showspinner"></mat-spinner>
   <div mat-dialog-actions>
   <button mat-raised-button color ="primary" (click)="onChange()" *ngIf="showbutton" [disabled]= "disablebutton" >{{AudioOption}} </button>
-  <button mat-raised-button  color="primary" (click)="goback()" *ngIf="showback" cdkFocusInitial>Back</button>
+  <button mat-raised-button  color="primary" (click)="goback()" *ngIf="showback" [disabled]= "disableback" cdkFocusInitial>Back</button>
   </div>
   </mat-card> 
 `
@@ -121,7 +121,7 @@ export class DialogAudioComponent {
   saveRef: any;
   private basePath = '/audio';
   showback = true;
-
+  disableback = false;
   constructor(public dialogRef: MatDialogRef<DialogAudioComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserInfoLogin, private cd: ChangeDetectorRef,
     private storage: AngularFireStorage, private afs: AngularFirestore, private dom: DomSanitizer) {
@@ -363,7 +363,7 @@ export class DialogAudioComponent {
       case 'Delete': {
         //first always check if the storage is valid.
         this.settingMsg = 'Deleting...';
-        this.showback = false;
+        this.disableback = true;
         this.showbutton = false;
         this.showspinner = true;
         this.cd.detectChanges();
@@ -384,7 +384,7 @@ export class DialogAudioComponent {
               this.data.downloadaudioURL = '';
               this.checkpermissions();
               this.showspinner = false;
-              this.showback = true;
+              this.disableback = false;
               this.cd.detectChanges();
             }).catch(error => {//DB update fail due to internet failure in 20 sec
               console.log('Deleted Failed in DB');
@@ -465,7 +465,10 @@ export class DialogAudioComponent {
   goback() {
     //this.audioFiles.pop();
     //this.cd.markForCheck();
+    console.log('clicked back');
+    this.cd.markForCheck();
     this.dialogRef.close(this.data);
+    this.cd.detectChanges();
     //this.cd.detectChanges();
   }
 
@@ -503,16 +506,17 @@ export class DialogAudioComponent {
       }, 1000);
     } else {//to finish recording
       console.log('stop Rec');
-      this.showbutton = false;
-      this.showspinner = true;
-      this.showmicrophone = false;
-      this.disablemicrophone = false;
-      this.showback = false;
-      this.state = RecordingState.STOPPED;
       this.mediaRecorder.stop();
       this.settingMsg = 'Saving Recorded Greeting';
       this.seconds = 9;
       this.clearTimer();
+      this.showbutton = false;
+      this.showspinner = true;
+      this.showmicrophone = false;
+      this.disablemicrophone = false;
+      this.disableback = true;
+      this.state = RecordingState.STOPPED;
+      this.cd.detectChanges();
       this.streamRef.getTracks().map((val) => {
         val.stop();
       });
@@ -560,10 +564,11 @@ export class DialogAudioComponent {
               console.log('DB Save');
               this.data.downloadaudioURL = downloadURL;
               //this.audioFiles.push(this.data.downloadaudioURL);
+              this.cd.markForCheck();
+              this.settingMsg = 'Play your Voice Greeting';
               this.showspinner = false;
               this.showbutton = true;
-              this.settingMsg = 'Play your Voice Greeting';
-              this.showback = true;
+              this.disableback = false;
               this.cd.detectChanges();
             }).catch(error => {
               console.log('Save Failed in Storage');
@@ -573,7 +578,7 @@ export class DialogAudioComponent {
               this.data.downloadaudioURL = audioURL;
               this.showbutton = true;
               this.AudioOption = 'Retry Save';
-              this.showback = true;
+              this.disableback = false;
               alert('Uh-oh, Connection Issue, Try Again');
               this.settingMsg = 'Play your Voice Greeting';
               this.cd.detectChanges();
