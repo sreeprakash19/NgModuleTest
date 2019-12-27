@@ -374,9 +374,9 @@ export class DialogAudioComponent implements OnDestroy{
       case 'Delete': {
         //first always check if the storage is valid.
         this.settingMsg = 'Deleting...';
-        this.disableback = true;
         this.showbutton = false;
         this.showspinner = true;
+        this.disableback = true;
         this.cd.detectChanges();
         this.storageRef = this.storage.storage.refFromURL(this.data.downloadaudioURL).getDownloadURL().then(url => {
           console.log('Greeting present in storage');
@@ -390,13 +390,13 @@ export class DialogAudioComponent implements OnDestroy{
                 transaction.update(ref, this.savetoDB);
               })
             ).then(successtran => {//update in DB done
-              console.log('deleted in DB');
-              this.audioFiles.pop();
-              this.data.downloadaudioURL = '';
-              this.checkpermissions();
+              console.log('deleted in DB');              
+              this.data.downloadaudioURL = '';              
               this.showspinner = false;
-              this.disableback = false;
-              this.cd.detectChanges();
+              this.disableback = false;              
+              this.audioFiles.pop();
+              //this.cd.detectChanges();  
+              this.checkpermissions();            
             }).catch(error => {//DB update fail due to internet failure in 20 sec
               console.log('Deleted Failed in DB');
               this.showspinner = false;
