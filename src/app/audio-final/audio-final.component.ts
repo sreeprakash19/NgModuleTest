@@ -122,6 +122,7 @@ export class DialogAudioComponent implements OnDestroy{
   saveRef: any;
   private basePath = '/audio';
   disableback = false;
+  public isOnline: boolean = navigator.onLine;
   constructor(public dialogRef: MatDialogRef<DialogAudioComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserInfoLogin, private cd: ChangeDetectorRef,
     private storage: AngularFireStorage, private afs: AngularFirestore, private dom: DomSanitizer) {
@@ -138,48 +139,56 @@ export class DialogAudioComponent implements OnDestroy{
       this.AudioOption = 'Delete';
       this.audioFiles.push(this.data.downloadaudioURL);
     } else {
-      console.log('reached empty string');
-      this.settingMsg = 'Please Wait !..';
-      this.showspinner = true;
-      this.storageRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
-      this.storageRef.getDownloadURL().then(url => {
-        console.log('storage orphan');
-        const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-        this.afs.firestore.runTransaction(transaction =>
-          transaction.get(ref).then(sfdoc => {
-            this.savetoDB = sfdoc.data() as UserInfoLoginArray;
-            this.savetoDB.downloadaudioURL = url;
-            transaction.update(ref, this.savetoDB);
-          })
-        ).then(successtran => {//update in DB done
-          console.log('db orphan');
-          //need to show C1
-          this.data.downloadaudioURL = url;
-          this.showspinner = false;
-          this.settingMsg = 'Play your Voice Greeting';
-          this.showmicrophone = false;
-          this.showbutton = true;
-          this.AudioOption = 'Delete';
-          this.audioFiles.push(this.data.downloadaudioURL);
-        }).catch(error => {//DB update fail due to internet failure in 20 sec
-          //we need to show C2
-          this.settingMsg = 'Play your Voice Greeting';
-          this.audioFiles.push('');
-          this.showspinner = false;
-          this.showbutton = false;
+      if(this.isOnline)
+      {
+        console.log('reached empty string');
+        this.settingMsg = 'Please Wait !..';
+        this.showspinner = true;
+        this.storageRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
+        this.storageRef.getDownloadURL().then(url => {
+          console.log('storage orphan');
+          const ref = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
+          this.afs.firestore.runTransaction(transaction =>
+            transaction.get(ref).then(sfdoc => {
+              this.savetoDB = sfdoc.data() as UserInfoLoginArray;
+              this.savetoDB.downloadaudioURL = url;
+              transaction.update(ref, this.savetoDB);
+            })
+          ).then(successtran => {//update in DB done
+            console.log('db orphan');
+            //need to show C1
+            this.data.downloadaudioURL = url;
+            this.showspinner = false;
+            this.settingMsg = 'Play your Voice Greeting';
+            this.showmicrophone = false;
+            this.showbutton = true;
+            this.AudioOption = 'Delete';
+            this.audioFiles.push(this.data.downloadaudioURL);
+          }).catch(error => {//DB update fail due to internet failure in 20 sec
+            //we need to show C2
+            this.settingMsg = 'Play your Voice Greeting';
+            this.audioFiles.push('');
+            this.showspinner = false;
+            this.showbutton = false;
+          });
+        }).catch(error => {
+          if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
+            this.showspinner = false;
+            this.checkpermissions(); //go to A
+          } else {
+            //we need to show C2
+            this.settingMsg = 'Play your Voice Greeting';
+            this.audioFiles.push('');
+            this.showspinner = false;
+            this.showbutton = false;
+          }
         });
-      }).catch(error => {
-        if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
-          this.showspinner = false;
-          this.checkpermissions(); //go to A
-        } else {
-          //we need to show C2
-          this.settingMsg = 'Play your Voice Greeting';
-          this.audioFiles.push('');
-          this.showspinner = false;
-          this.showbutton = false;
-        }
-      });
+      } else{
+        this.settingMsg = 'Play your Voice Greeting';
+        this.audioFiles.push('');
+        this.showspinner = false;
+        this.showbutton = false;
+      }
     }
   }
 
@@ -297,7 +306,7 @@ export class DialogAudioComponent implements OnDestroy{
           if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
             //upload to storage and update DB
             const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-            this.disableback = true;
+            //this.disableback = true;
             this.cd.detectChanges();
             this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
               if (uploadstat != null) {
@@ -352,6 +361,7 @@ export class DialogAudioComponent implements OnDestroy{
             //internet off so try again
             console.log('Retry Save Failed in storage');
             this.showspinner = false;
+            this.disableback = false;
             this.showbutton = true;
             this.settingMsg = 'Play your Voice Greeting';
             this.AudioOption = 'Retry Save';
@@ -603,7 +613,7 @@ export class DialogAudioComponent implements OnDestroy{
         this.AudioOption = 'Retry Save';
         alert('Uh-oh, Connection Issue, Try Again');
         this.settingMsg = 'Play your Voice Greeting';
-        this.showback = true;
+        this.disableback = false;
         this.cd.detectChanges();
         //alert is taken care
       });
