@@ -264,6 +264,10 @@ export class DialogAudioComponent implements OnDestroy{
   }
 
   onChange() {
+    if(!this.isOnline)
+    {
+      return;
+    }
     if (this.AudioOption === 'Retry Delete') {
       this.AudioOption = 'Delete';
     }
@@ -395,7 +399,7 @@ export class DialogAudioComponent implements OnDestroy{
               this.showspinner = false;
               this.disableback = false;              
               this.audioFiles.pop();
-              //this.cd.detectChanges();  
+              //this.cd.detectChanges();  //it takes some time to read the status
               this.checkpermissions();            
             }).catch(error => {//DB update fail due to internet failure in 20 sec
               console.log('Deleted Failed in DB');
@@ -482,10 +486,19 @@ export class DialogAudioComponent implements OnDestroy{
     //this.audioFiles.pop();
     //this.cd.markForCheck();
     console.log('clicked back');
-    this.cd.markForCheck();
-    this.dialogRef.disableClose = false;
-    this.dialogRef.close(this.data);    
-    this.cd.detectChanges();
+    if(this.AudioOption === 'Retry Save') {
+      console.log('clicked back- Retry');
+      this.audioFiles.pop();
+      this.AudioOption = 'Settings';
+      this.checkpermissions();
+      this.cd.detectChanges();
+    }else{
+      this.dialogRef.close(this.data);    
+    }
+    //this.cd.markForCheck();
+    //this.dialogRef.disableClose = false;
+
+    //this.cd.detectChanges();
     //this.cd.detectChanges();
   }
 
@@ -564,7 +577,19 @@ export class DialogAudioComponent implements OnDestroy{
       //this.audioFiles.push(this.dom.bypassSecurityTrustUrl(audioURL));
       const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
       //audio/${new Date().getTime()}_${text}
-      
+      if(!this.isOnline)
+      {
+        this.data.downloadaudioURL = audioURL;
+        this.showmicrophone = false;
+        this.showbutton = true;
+        this.disableback = false;
+        this.AudioOption = 'Retry Save';
+        alert('Uh-oh, Connection Issue, Try Again');
+        this.settingMsg = 'Play your Voice Greeting';
+        this.disableback = false;
+        this.cd.detectChanges();
+        return;
+      }
       console.log('start Save');
       this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
         if (uploadstat != null) {
@@ -635,8 +660,9 @@ export class DialogAudioComponent implements OnDestroy{
   }
 
   ngOnDestroy(){
-
+    console.log('reached ngOnDestroy');
   }
+
 }
 
 
