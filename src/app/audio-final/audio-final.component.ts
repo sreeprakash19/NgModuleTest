@@ -79,7 +79,7 @@ export class AudioFinalComponent implements OnInit {
   <mat-spinner *ngIf= "showspinner"></mat-spinner>
   <div mat-dialog-actions>
   <button mat-raised-button color ="primary" (click)="onChange()" *ngIf="showbutton" [disabled]= "disablebutton" >{{AudioOption}} </button>
-  <button mat-raised-button  color="primary" (click)="goback()" *ngIf="showback" [disabled]= "disableback" cdkFocusInitial>Back</button>
+  <button mat-raised-button  color="primary" (click)="goback()" [disabled]= "disableback" cdkFocusInitial>Back</button>
   </div>
   </mat-card> 
 `
@@ -121,7 +121,6 @@ export class DialogAudioComponent implements OnDestroy{
   storageRef: any;
   saveRef: any;
   private basePath = '/audio';
-  showback = true;
   disableback = false;
   constructor(public dialogRef: MatDialogRef<DialogAudioComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserInfoLogin, private cd: ChangeDetectorRef,
@@ -298,7 +297,7 @@ export class DialogAudioComponent implements OnDestroy{
           if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
             //upload to storage and update DB
             const reference = this.afs.firestore.collection('testcollections').doc(`${this.data.Uid}`);
-            this.showback = false;
+            this.disableback = true;
             this.cd.detectChanges();
             this.storage.upload(`audio/${this.data.Uid}`, this.imageFile).then(uploadstat => {
               if (uploadstat != null) {
@@ -343,7 +342,7 @@ export class DialogAudioComponent implements OnDestroy{
               this.showbutton = true;
               this.AudioOption = 'Retry Save';              
               this.settingMsg = 'Play your Voice Greeting';
-              this.showback = true;
+              this.disableback = false;
               this.cd.detectChanges();
               alert('Uh-oh, Connection Issue, Try Again');
               //alert is taken care
@@ -503,7 +502,7 @@ export class DialogAudioComponent implements OnDestroy{
           this.showmicrophone = false;
           this.disablemicrophone = false;
           this.mediaRecorder.stop();
-          this.showback = false;
+          this.disableback = true;
           this.settingMsg = 'Saving Recorded Greeting';
           this.streamRef.getTracks().map((val) => {
             val.stop();
