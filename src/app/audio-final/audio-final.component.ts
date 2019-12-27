@@ -391,6 +391,7 @@ export class DialogAudioComponent {
               this.showspinner = false;
               //this.audioFiles.push(this.data.downloadaudioURL);
               this.showbutton = true;
+              this.disableback = false;
               this.AudioOption = 'Retry Delete';
               this.cd.detectChanges();
               alert('Uh-oh, Connection Issue, Try Again');
@@ -401,6 +402,7 @@ export class DialogAudioComponent {
           }).catch(error => {//reaches here after solid 1 min
             this.showspinner = false;
             this.showbutton = true;
+            this.disableback = false;
             //this.audioFiles.push(this.data.downloadaudioURL);
             this.settingMsg = 'Play your Voice Greeting';
             this.AudioOption = 'Retry Delete';
@@ -434,6 +436,7 @@ export class DialogAudioComponent {
               console.log('Retry Deleted Failed in DB');
               this.showspinner = false;
               this.showbutton = true;
+              this.disableback = false;
               this.AudioOption = 'Retry Delete';
               this.cd.detectChanges();
               this.settingMsg = 'Play your Voice Greeting';
@@ -442,6 +445,7 @@ export class DialogAudioComponent {
             console.log('Retry Deleted Failed in storage');
             this.showspinner = false;
             this.showbutton = true;
+            this.disableback = false;
             this.settingMsg = 'Play your Voice Greeting';
             this.AudioOption = 'Retry Delete';
             this.cd.detectChanges();
