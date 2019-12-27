@@ -95,7 +95,20 @@ export class DialogAudioComponent {
   showspinner = false;
   AudioOption = 'Delete';
   seconds = 0;
-  savetoDB: UserInfoLoginArray;
+  savetoDB: UserInfoLoginArray = {
+    displayName: 'Manoj Isaac',
+    photoURL: 'https://lh3.googleusercontent.com/a-/AAuE7mDcM-XfiG-OgprYqulFoAgKDCAvnWSDiiLqiiXx',
+    phoneNumber: '9978878789',
+    Gender: 'Male',
+    AnniversaryDate: 'Nov 11',
+    BirthDate: 'Jan 28',
+    customdisplayName: 'update DisplayedName',
+    // tslint:disable-next-line: max-line-length
+    customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2Fhi.jpg?alt=media&token=7877d272-94c1-4f40-a673-afc81be73cf0',
+    //customphotoURL: '',
+    GiftsBank: 0,
+    downloadaudioURL: ''
+  }
   private itemDoc: AngularFirestoreDocument<UserInfoLoginArray>;
 
   intervalId = 0;
@@ -114,8 +127,9 @@ export class DialogAudioComponent {
     private storage: AngularFireStorage, private afs: AngularFirestore, private dom: DomSanitizer) {
 
     this.state = RecordingState.STOPPED;
-    this.savetoDB = { ... this.data };
+    //this.savetoDB = { ... this.data };
     this.itemDoc = this.afs.doc<UserInfoLoginArray>(`testcollections/${this.data.Uid}`);
+    this.itemDoc.set(this.savetoDB);
     //this.itemDoc =this.afs.collection('testcollections').doc(`${this.data.Uid}`);
     if (data.downloadaudioURL !== '') {
       this.settingMsg = 'Play your Voice Greeting';
@@ -124,7 +138,7 @@ export class DialogAudioComponent {
       this.AudioOption = 'Delete';
       this.audioFiles.push(this.data.downloadaudioURL);
     } else {
-      console.log('reached null');
+      console.log('reached empty string');
       this.settingMsg = 'Please Wait !..';
       this.showspinner = true;
       this.storageRef = firebase.storage().ref().child(`${this.basePath}/${this.data.Uid}`);
@@ -157,7 +171,7 @@ export class DialogAudioComponent {
       }).catch(error => {
         if (error.code === 'storage/object-not-found' || error.code === 'storage/canceled') {
           this.showspinner = false;
-          this.checkpermissions();
+          this.checkpermissions(); //go to A
         } else {
           //we need to show C2
           this.settingMsg = 'Play your Voice Greeting';
