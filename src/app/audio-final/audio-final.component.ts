@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FamilydetailsService, UserInfoLogin, UserInfoLoginArray } from '../familydetails.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AngularFireStorage } from '@angular/fire/storage';
@@ -46,6 +46,7 @@ export class AudioFinalComponent implements OnInit {
     this.dialogRefAudio.afterClosed().subscribe(result => {
       this.svc.AfterLoginSend(result);//tmp
       console.log('result');
+      this.dialog.ngOnDestroy();
     });
 
   }
@@ -84,7 +85,7 @@ export class AudioFinalComponent implements OnInit {
 `
 })
 
-export class DialogAudioComponent {
+export class DialogAudioComponent implements OnDestroy{
   settingMsg = '';
   state: RecordingState;
   disablemicrophone: boolean;
@@ -261,7 +262,7 @@ export class DialogAudioComponent {
     switch (this.AudioOption) {
       case 'Retry Save': {
         this.settingMsg = 'Saving...';
-        this.showback = false;
+        this.disableback = true;
         this.showbutton = false;
         this.showspinner = true;
         this.cd.detectChanges();
@@ -280,12 +281,13 @@ export class DialogAudioComponent {
             this.audioFiles.pop();
             this.audioFiles.push(this.data.downloadaudioURL);
             this.showspinner = false;
-            this.showback = true;
+            this.disableback = false;
             this.cd.detectChanges();
           }).catch(error => {//DB update fail due to internet failure in 20 sec
             console.log('update Failed in DB');
             this.showspinner = false;
             this.showbutton = true;
+            this.disableback = false;
             this.AudioOption = 'Retry Save';
             this.settingMsg = 'Play your Voice Greeting';
             this.cd.detectChanges();
@@ -314,7 +316,7 @@ export class DialogAudioComponent {
                     this.disablemicrophone = false;
                     this.showbutton = true;
                     this.settingMsg = 'Play your Voice Greeting';
-                    this.showback = true;
+                    this.disableback = false;
                     this.cd.detectChanges();
                   }).catch(error => {
                     console.log('Save Failed in Storage');
@@ -324,7 +326,7 @@ export class DialogAudioComponent {
                     this.data.downloadaudioURL = this.data.downloadaudioURL;
                     this.showbutton = true;
                     this.AudioOption = 'Retry Save';
-                    this.showback = true;
+                    this.disableback = false;
                     this.settingMsg = 'Play your Voice Greeting';
                     this.cd.detectChanges();
                     alert('Uh-oh, Connection Issue, Try Again');
@@ -430,6 +432,7 @@ export class DialogAudioComponent {
               this.checkpermissions();
               this.showspinner = false;
               this.showbutton = false;
+              this.disableback = false;
               this.audioFiles.pop();
               this.cd.detectChanges();
             }).catch(error => {
@@ -471,7 +474,8 @@ export class DialogAudioComponent {
     //this.cd.markForCheck();
     console.log('clicked back');
     this.cd.markForCheck();
-    this.dialogRef.close(this.data);
+    this.dialogRef.disableClose = false;
+    this.dialogRef.close(this.data);    
     this.cd.detectChanges();
     //this.cd.detectChanges();
   }
@@ -596,6 +600,7 @@ export class DialogAudioComponent {
         this.data.downloadaudioURL = audioURL;
         this.showmicrophone = false;
         this.showbutton = true;
+        this.disableback = false;
         this.AudioOption = 'Retry Save';
         alert('Uh-oh, Connection Issue, Try Again');
         this.settingMsg = 'Play your Voice Greeting';
@@ -618,6 +623,10 @@ export class DialogAudioComponent {
 
   errorCallback(error) {
     this.error = 'Can not play audio in your browser';
+  }
+
+  ngOnDestroy(){
+
   }
 }
 
