@@ -62,6 +62,7 @@ const routes: Routes = [
   { path: 'lazy', loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule) },
   { path: 'loginscreen-start', loadChildren: () => import('./login-screen/login-screen.module').then(m => m.LoginScreenModule) },*/
   { path: 'audio-final', loadChildren: () => import('./audio-final/audio-final.module').then(m => m.AudioFinalModule) },
+  { path: 'family-page', loadChildren: () => import('./family-page/family-page.module').then(m => m.FamilyPageModule) },
   { path: '**', redirectTo: '' , pathMatch: 'full'}
 
   

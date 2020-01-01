@@ -23,9 +23,15 @@ export interface PokemonGroup {
 })
 export class AppComponent {
   title = 'test';
-  pokemonControl = new FormControl('audio-final');
+  pokemonControl = new FormControl('family-page');
   pokemonGroups: PokemonGroup[] = [
     {
+      name: 'Family Page',
+      pokemon: [
+        {value: 'family-page', viewValue: 'Family'}
+      ]
+    }
+    /*{
       name: 'Audio Testing',
       pokemon: [
         {value: 'audio-final', viewValue: 'Audio'}
@@ -33,7 +39,7 @@ export class AppComponent {
     }
     
     
-    /*,
+    ,
     {
       name: 'Login Screen',
       pokemon: [
@@ -111,6 +117,13 @@ export class AppComponent {
   ];
   pokemonControltc = new FormControl({value: '', disabled: true});
   pokemonGroupstc: PokemonGroup[] = [
+    {
+      name: 'Family Page',
+      pokemon: [
+        {value: 'family-page/familypage', viewValue: 'Family Page'}
+      ]
+    },
+
     {
       name: 'Audio Testing',
       pokemon: [

@@ -37,7 +37,7 @@ export class ImageRecordComponent implements OnInit, AfterContentInit {
   showcanvas = false;
   canvasElement: any;
   context: any;
-
+ 
   @ViewChild('video', { static: true }) video: any;
   @ViewChild('canvas', { static: true }) canvas: any;
   constructor(private cd: ChangeDetectorRef, private dom: DomSanitizer,
@@ -177,7 +177,6 @@ export class ImageRecordComponent implements OnInit, AfterContentInit {
 
   AfterVideoLoad() {
     this.showspinner = false;
-
   }
   ngAfterContentInit(){
     this.canvas.nativeElement.style.display = 'none';

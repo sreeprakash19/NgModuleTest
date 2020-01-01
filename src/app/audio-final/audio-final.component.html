@@ -8,7 +8,7 @@
           <mat-card-subtitle>Ph:{{myafterlogindata?.phoneNumber}}</mat-card-subtitle>
         </mat-card-header>
         <mat-spinner *ngIf= "showspinner"></mat-spinner>
-        <img mat-card-image style= "max-height: 50vh" src= "{{myafterlogindata.photoURL}}"   (load)="dosomething()" alt="Photo of a User">
+        <img mat-card-image style= "max-height: 50vh" src= "{{myafterlogindata?.customphotoURL}}"   (load)="dosomething()" alt="Photo of a User">
       <mat-card-content>
           <pre>
             {{myafterlogindata?.customdisplayName}}

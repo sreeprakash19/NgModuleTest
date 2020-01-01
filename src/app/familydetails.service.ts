@@ -46,17 +46,15 @@ export interface FromDatabase {
 })
 export class FamilydetailsService {
   AfterLoginData : UserInfoLogin = {
-    displayName: 'Manoj Isaac',
-    photoURL: 'https://lh3.googleusercontent.com/a-/AAuE7mDcM-XfiG-OgprYqulFoAgKDCAvnWSDiiLqiiXx',
+    displayName: 'Manoj Isaac1',
+    photoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2Fhi.jpg?alt=media&token=7877d272-94c1-4f40-a673-afc81be73cf0',
     phoneNumber: '9978878789',
     Gender: 'Male',
     Uid: 'KjMfJfNSJzVuV7X5ds8Xu0KUCvG2',
     AnniversaryDate: 'Nov 11',
     BirthDate: 'Jan 28',
     customdisplayName: 'update DisplayedName',
-    // tslint:disable-next-line: max-line-length
-    customphotoURL: 'https://firebasestorage.googleapis.com/v0/b/angularsocial-c52dd.appspot.com/o/images%2Fhi.jpg?alt=media&token=7877d272-94c1-4f40-a673-afc81be73cf0',
-    //customphotoURL: '',
+    customphotoURL: 'https://lh3.googleusercontent.com/a-/AAuE7mDcM-XfiG-OgprYqulFoAgKDCAvnWSDiiLqiiXx',
     GiftsBank: 0,
     downloadaudioURL: ''
   }
@@ -65,6 +63,7 @@ export class FamilydetailsService {
 
   AfterLoginSend(saveData : UserInfoLogin){
     this.savedValue.next(saveData);
+    console.log('Pushing from service', saveData);
   }
   
   constructor() { }

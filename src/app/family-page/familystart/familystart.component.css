@@ -1,0 +1,7 @@
+.kidImage {
+    border-radius: 50%;
+    border: 1px solid #ddd;
+
+    padding: 5px;
+    width: 150px;
+  }

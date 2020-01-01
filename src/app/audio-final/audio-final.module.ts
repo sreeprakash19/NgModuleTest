@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { AudioFinalRoutingModule } from './audio-final-routing.module';
-import { AudioFinalComponent, DialogAudioComponent } from './audio-final.component';
-import { AudioRecordComponent, DialogAfterAudio, DialogAfterOldAudio } from './components/audio-record/audio-record.component';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppMaterialModule} from '../app-material/app-material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {OverlayContainer} from '@angular/cdk/overlay';
+
+import { AudioFinalRoutingModule } from './audio-final-routing.module';
+import { AudioFinalComponent, DialogAudioComponent, DialogPicComponent } from './audio-final.component';
+import { AudioRecordComponent, DialogAfterAudio, DialogAfterOldAudio } from './components/audio-record/audio-record.component';
+
 import { StartNullComponent, DialogAudioNullComponent, DialogVideoNullComponent } from './components/start-null/start-null.component';
 import { StartOldComponent, DialogAudioOldComponent, DialogVideoOldComponent } from './components/start-old/start-old.component';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
@@ -17,7 +18,7 @@ import { AudioClipComponent } from './components/audio-clip/audio-clip.component
 
 @NgModule({
   declarations: [
-    AudioFinalComponent, DialogAudioComponent,
+    AudioFinalComponent, DialogAudioComponent,DialogPicComponent,
     AudioRecordComponent, 
     DialogAfterAudio, 
     DialogAfterOldAudio, 
@@ -28,7 +29,6 @@ import { AudioClipComponent } from './components/audio-clip/audio-clip.component
 
     AudioFinalRoutingModule,
     CommonModule,
-
     SharedModule,
     ReactiveFormsModule,
     AppMaterialModule,
@@ -36,7 +36,7 @@ import { AudioClipComponent } from './components/audio-clip/audio-clip.component
 
   ],
   entryComponents: [
-    DialogAudioComponent,
+    DialogAudioComponent,DialogPicComponent,
     DialogAfterAudio,
     DialogAfterOldAudio,
     DialogAudioNullComponent, DialogVideoNullComponent,
